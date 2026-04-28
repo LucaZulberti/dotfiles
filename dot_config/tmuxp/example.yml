@@ -1,0 +1,11 @@
+session_name: example
+
+# global_options:
+  # remain-on-exit: true
+
+windows:
+  - window_name: home
+    layout: main-vertical
+    start_directory: $HOME
+    panes:
+      - l

@@ -1,0 +1,42 @@
+session_name: config
+
+windows:
+  - window_name: workenv 
+    layout: main-vertical
+    start_directory: ~/Git/config
+    options:
+      remain-on-exit: true
+    panes:
+      - shell: hx .
+
+  - window_name: helix
+    layout: main-vertical
+    start_directory: ~/.config/helix
+    options:
+      remain-on-exit: true
+    panes:
+      - shell: hx config.toml
+
+  - window_name: tmux
+    layout: main-vertical
+    start_directory: ~/.config/tmux
+    options:
+      remain-on-exit: true
+    panes:
+      - shell: hx tmux.conf
+
+  - window_name: tmuxp
+    layout: main-vertical
+    start_directory: ~/.config/tmuxp
+    options:
+      remain-on-exit: true
+    panes:
+      - shell: hx .
+
+  - window_name: fish
+    layout: main-vertical
+    start_directory: ~/.config/fish
+    options:
+      remain-on-exit: true
+    panes:
+      - shell: hx .
