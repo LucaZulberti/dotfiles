@@ -3,12 +3,12 @@
 <plist version="1.0">
   <dict>
     <key>Label</key>
-    <string>com.luca.pomodoro</string>
+    <string>com.{{ .chezmoi.username }}.pomodoro</string>
 
     <key>ProgramArguments</key>
     <array>
       <string>/opt/homebrew/bin/fish</string>
-      <string>/Users/luca/.config/fish/bin/pomodoro.fish</string>
+      <string>/Users/{{ .chezmoi.username }}/.config/fish/bin/pomodoro.fish</string>
     </array>
 
     <key>RunAtLoad</key>
@@ -18,10 +18,9 @@
     <true/>
 
     <key>StandardOutPath</key>
-    <string>/tmp/luca.pomodoro.out.log</string>
+    <string>/tmp/{{ .chezmoi.username }}.pomodoro.out.log</string>
 
     <key>StandardErrorPath</key>
-    <string>/tmp/luca.pomodoro.err.log</string>
+    <string>/tmp/{{ .chezmoi.username }}.pomodoro.err.log</string>
   </dict>
 </plist>
-
