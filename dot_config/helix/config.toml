@@ -1,0 +1,130 @@
+# ──────────────────────────────────────────────
+# THEME
+# ──────────────────────────────────────────────
+theme = "catppuccin_mocha"
+
+# ──────────────────────────────────────────────
+# EDITOR
+# ──────────────────────────────────────────────
+[editor]
+color-modes = true         # Tint the statusbar to reflect the current mode
+completion-trigger-len = 1 # Trigger LSP completions after the first character
+cursorline = true          # Highlight the entire line the cursor is on
+line-number = "relative"   # Relative numbers make jump motions (5j, 12k) easier to count
+mouse = false              # Keyboard-only; disable all mouse interaction
+scrolloff = 10             # Always keep 10 lines of context above/below the cursor
+shell = ["fish", "-c"]     # Use fish for :sh and :insert-output commands
+true-color = true          # 24-bit RGB color — required by catppuccin and most modern themes
+
+# ──────────────────────────────────────────────
+# CURSOR SHAPE
+# ──────────────────────────────────────────────
+[editor.cursor-shape]
+insert = "bar"             # Bar       — you are typing
+normal = "block"           # Block     — you are navigating
+select = "underline"       # Underline — you are selecting
+
+# ──────────────────────────────────────────────
+# FILE PICKER
+# ──────────────────────────────────────────────
+[editor.file-picker]
+hidden = false             # Include dotfiles (.env, .gitignore, etc.)
+
+# ──────────────────────────────────────────────
+# GUTTERS
+# ──────────────────────────────────────────────
+[editor.gutters]
+# diff         → git change markers (+/~/-)
+# diagnostics  → LSP error/warning icons
+# line-numbers → line numbers
+# spacer       → padding between gutter and buffer content
+layout = ["diff", "diagnostics", "line-numbers", "spacer"]
+
+[editor.gutters.line-numbers]
+min-width = 1              # Shrink the gutter to 1 digit on short files
+
+# ──────────────────────────────────────────────
+# INDENT GUIDES
+# ──────────────────────────────────────────────
+[editor.indent-guides]
+render = true              # Show vertical lines at each indent level
+
+# ──────────────────────────────────────────────
+# STATUS LINE
+# ──────────────────────────────────────────────
+[editor.statusline]
+left   = ["mode", "spinner", "file-name", "file-modification-indicator"]
+center = ["diagnostics"]
+right  = ["selections", "position", "file-encoding", "file-type"]
+
+# ──────────────────────────────────────────────
+# NORMAL MODE KEYBINDINGS
+# ──────────────────────────────────────────────
+[keys.normal]
+# Disable arrow keys and nav cluster — use hjkl and motions instead
+up        = "no_op"
+down      = "no_op"
+left      = "no_op"
+right     = "no_op"
+pageup    = "no_op"
+pagedown  = "no_op"
+home      = "no_op"
+end       = "no_op"
+
+# Buffer management
+"C-q" = ":buffer-close"       # Close current buffer
+"C-Q" = ":buffer-close-all"   # Close all buffers
+
+# Half-page scroll
+"C-d" = ["half_page_down"]
+"C-u" = ["half_page_up"]
+
+# Open Lazygit: save all, open scratch buffer, run lazygit,
+# then close scratch, redraw and reload everything on exit
+C-g = [
+  ":write-all",
+  ":new",
+  ":insert-output lazygit",
+  ":buffer-close!",
+  ":redraw",
+  ":reload-all",
+]
+
+# Space as leader key
+[keys.normal.space]
+q = ":quit"       # Close current window
+Q = ":quit-all"   # Exit Helix
+w = ":write"      # Save current buffer
+W = ":write-all"  # Save all buffers
+
+# ──────────────────────────────────────────────
+# INSERT MODE KEYBINDINGS
+# ──────────────────────────────────────────────
+[keys.insert]
+# Disable arrow keys and nav cluster — use motions instead
+up        = "no_op"
+down      = "no_op"
+left      = "no_op"
+right     = "no_op"
+pageup    = "no_op"
+pagedown  = "no_op"
+home      = "no_op"
+end       = "no_op"
+
+"C-c" = "normal_mode"   # Return to normal mode (alternative to Escape)
+
+# ──────────────────────────────────────────────
+# SELECT MODE KEYBINDINGS
+# ──────────────────────────────────────────────
+[keys.select]
+# Disable arrow keys and nav cluster — use motions instead
+up        = "no_op"
+down      = "no_op"
+left      = "no_op"
+right     = "no_op"
+pageup    = "no_op"
+pagedown  = "no_op"
+home      = "no_op"
+end       = "no_op"
+
+"C-c" = "normal_mode"   # Return to normal mode (alternative to Escape)

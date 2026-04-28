@@ -1,0 +1,32 @@
+[[language]]
+name = "typescript"
+auto-format = true
+language-servers = [
+  { name = "typescript-language-server", except-features = ["format"] },
+  { name = "angular", except-features = ["format"] },
+]
+formatter = { command = "prettier", args = ["--stdin-filepath", "%{buffer_name}"] }
+
+[[language]]
+name = "html"
+auto-format = true
+language-servers = [
+  { name = "vscode-html-language-server", except-features = ["format"] },
+  { name = "angular", except-features = ["format"] },
+]
+formatter = { command = "prettier", args = ["--stdin-filepath", "%{buffer_name}"] }
+
+[[language]]
+name = "css"
+auto-format = true
+formatter = { command = "prettier", args = ["--stdin-filepath", "%{buffer_name}"] }
+
+[[language]]
+name = "scss"
+auto-format = true
+formatter = { command = "prettier", args = ["--stdin-filepath", "%{buffer_name}"] }
+
+[[language]]
+name = "json"
+auto-format = true
+formatter = { command = "prettier", args = ["--stdin-filepath", "%{buffer_name}"] }
