@@ -1,0 +1,15 @@
+SHR=$HOME/.local/share/workenv
+WC=workenv-$USER
+
+# TimeZone
+TZ=${TZ:-UTC}
+
+# we : easy to type with left hand (WorkEnv)
+alias we="TZ=$TZ workenv"
+
+alias we-home="we $SHR $HOME"
+alias we-home-clean="docker rm -f $WC-$USER"
+
+alias we-config="we $SHR $HOME/.config"
+alias we-config-clean="docker rm -f $WC-config"
+
