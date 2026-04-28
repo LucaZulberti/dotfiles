@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+SHARE_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+
 # Docker builder name for multi-arch builds
 builder="multi-arch"
 
@@ -30,4 +32,4 @@ fi
 
 # Build the Docker image, passing additional arguments
 echo "Building the Docker image for platforms: ${platforms}"
-docker buildx build "${docker_build_args[@]}" "$@" . && echo "Docker image built successfully!"
+docker buildx build "${docker_build_args[@]}" "$@" $SHARE_DIR && echo "Docker image built successfully!"

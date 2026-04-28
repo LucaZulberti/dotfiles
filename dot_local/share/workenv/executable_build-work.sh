@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+SHARE_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+
 # Detect the operating system
 if [[ "$(uname)" == "Darwin" ]]; then
     # macOS detected
@@ -25,5 +27,4 @@ docker build \
     --build-arg HOST_GROUP=$(id -g -n) \
     -t workenv:$USER \
     -f Dockerfile.work \
-    .
-
+    $SHARE_DIR

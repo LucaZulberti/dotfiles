@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+SHARE_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+
 # Default values for arguments
 WORK_DIR="$(pwd)"
 MOUNTS=()
@@ -130,8 +132,8 @@ else
     echo "Container '${CONTAINER_NAME}' does not exist. Creating and starting..."
 
     # Update workenv if needed
-    pushd $(dirname "$0")/.. &> /dev/null
-    scripts/docker-build-work.sh &> .docker-build-work.log
+    pushd $SHARE_DIR &> /dev/null
+    ./build-work.sh &> .build-work.log
     popd &> /dev/null
 
     echo ""
