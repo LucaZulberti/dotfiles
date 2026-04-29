@@ -1,0 +1,3 @@
+{{ if eq .chezmoi.username "zulberti" -}}
+machine download.ingeniars.com login {{ onepasswordRead "op://IngeniArs/Download IngeniArs/username" }} password {{ onepasswordRead "op://IngeniArs/Download IngeniArs/password" }}
+{{ end -}}
