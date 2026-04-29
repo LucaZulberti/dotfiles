@@ -1,0 +1,198 @@
+#!/usr/bin/env python3
+
+"""
+move_unmatched.py
+
+Move files with a given source extension if no matching reference
+extension exists in the same directory.
+
+Features:
+- Optional recursive mode (-R)
+- Default directory is current working directory
+- Case-insensitive matching
+- Safe moves (shutil.move)
+- Dry-run + verbose modes
+- Optional progress bar (tqdm)
+"""
+
+import argparse
+import os
+import shutil
+
+try:
+    from tqdm import tqdm
+except ImportError:
+    tqdm = None
+
+
+# ----------------------------------------------------------------------
+# Helpers
+# ----------------------------------------------------------------------
+
+def norm_ext(ext: str) -> str:
+    """Normalize extension (remove dot, lowercase)."""
+    return ext.lower().lstrip(".")
+
+
+# ----------------------------------------------------------------------
+# Core per-directory logic
+# ----------------------------------------------------------------------
+
+def process_directory(dirpath, filenames, src_ext, ref_ext,
+                      subdir_name, dry_run, verbose, stats):
+
+    index = {}
+
+    # Build index in a single pass
+    for fname in filenames:
+        base, ext = os.path.splitext(fname)
+
+        if not ext:
+            continue
+
+        key = base.lower()
+        ext = norm_ext(ext)
+
+        if key not in index:
+            index[key] = {}
+
+        if ext in index[key]:
+            if verbose:
+                print(f"[WARN] Duplicate ignored: {fname}")
+            continue
+
+        index[key][ext] = fname
+
+    items = list(index.items())
+
+    use_tqdm = tqdm is not None and os.isatty(1)
+    iterator = tqdm(items, desc=dirpath) if use_tqdm else items
+
+    # Decide + execute
+    for _, exts in iterator:
+
+        if src_ext not in exts:
+            continue
+
+        if ref_ext in exts:
+            stats["kept"] += 1
+            continue
+
+        src_file = os.path.join(dirpath, exts[src_ext])
+        target_dir = os.path.join(dirpath, subdir_name)
+        dst_file = os.path.join(target_dir, exts[src_ext])
+
+        stats["candidates"] += 1
+
+        if dry_run:
+            stats["would_move"] += 1
+            continue
+
+        os.makedirs(target_dir, exist_ok=True)
+
+        if os.path.exists(dst_file):
+            if verbose:
+                print(f"[SKIP] Exists: {dst_file}")
+            stats["skipped"] += 1
+            continue
+
+        try:
+            shutil.move(src_file, dst_file)
+            stats["moved"] += 1
+        except Exception as e:
+            stats["failed"] += 1
+            if verbose:
+                print(f"[ERROR] {src_file}: {e}")
+
+
+# ----------------------------------------------------------------------
+# Main
+# ----------------------------------------------------------------------
+
+def main():
+    parser = argparse.ArgumentParser(
+        description="Move unmatched files (default dir: current directory)."
+    )
+
+    # DEFAULT DIRECTORY = CURRENT DIRECTORY
+    parser.add_argument(
+        "-d", "--dir",
+        default=".",
+        help="Target directory (default: current directory)"
+    )
+
+    parser.add_argument("-n", "--name", required=True)
+    parser.add_argument("-R", "--recursive", action="store_true",
+                        help="Enable recursive traversal")
+    parser.add_argument("--dry-run", action="store_true")
+    parser.add_argument("-v", "--verbose", action="store_true")
+
+    parser.add_argument("src_ext")
+    parser.add_argument("ref_ext")
+
+    args = parser.parse_args()
+
+    src_ext = norm_ext(args.src_ext)
+    ref_ext = norm_ext(args.ref_ext)
+
+    target_root = os.path.abspath(args.dir)
+
+    if not os.path.isdir(target_root):
+        print(f"Error: '{target_root}' is not a valid directory.")
+        return 1
+
+    stats = {
+        "moved": 0,
+        "failed": 0,
+        "kept": 0,
+        "candidates": 0,
+        "would_move": 0,
+        "skipped": 0,
+    }
+
+    # ----------------------------
+    # Traversal mode
+    # ----------------------------
+    if args.recursive:
+        walker = os.walk(target_root)
+    else:
+        walker = [(target_root, [], os.listdir(target_root))]
+
+    for dirpath, dirnames, filenames in walker:
+
+        if args.recursive:
+            dirnames[:] = [d for d in dirnames if d != args.name]
+
+        if args.verbose:
+            print(f"\n[DIR] {dirpath}")
+
+        process_directory(
+            dirpath,
+            filenames,
+            src_ext,
+            ref_ext,
+            args.name,
+            args.dry_run,
+            args.verbose,
+            stats
+        )
+
+    # ----------------------------
+    # Summary
+    # ----------------------------
+    print("\n--- Summary ---")
+    print(f"Moved files     : {stats['moved']}")
+    print(f"Failed moves    : {stats['failed']}")
+    print(f"Kept files      : {stats['kept']}")
+    print(f"Candidates      : {stats['candidates']}")
+
+    if args.dry_run:
+        print(f"Would move      : {stats['would_move']}")
+
+    print(f"Skipped         : {stats['skipped']}")
+
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
