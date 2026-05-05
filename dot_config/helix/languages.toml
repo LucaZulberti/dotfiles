@@ -1,4 +1,9 @@
 [[language]]
+name = "vhdl"
+auto-format = true
+formatter = { command = "vsg-format" }
+
+[[language]]
 name = "typescript"
 auto-format = true
 language-servers = [
