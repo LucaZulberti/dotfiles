@@ -1,0 +1,37 @@
+[user]
+	name = Luca Zulberti
+{{- if eq .chezmoi.username "zulberti" }}
+	email = Luca.Zulberti@ingeniars.com
+	signingkey = {{ onepasswordRead "op://IngeniArs/GitHub Key/public_key" }} GitHub
+{{ else }}
+	email = zulberti.luca@gmail.com
+	signingkey = {{ onepasswordRead "op://Private/GitHub Key/public_key" }} GitHub
+{{ end -}}	
+[init]
+	defaultBranch = main
+[protocol "file"]
+	allow = always
+[filter "lfs"]
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true
+[diff "lockb"]
+	textconv = bun
+    binary = true
+[commit]
+    gpgsign = true
+[tag]
+    gpgsign = true
+[gpg]
+    format = ssh
+[core]
+    pager = delta
+[interactive]
+    diffFilter = delta --color-only
+[delta]
+    navigate = true  # use n and N to move between diff sections
+    dark = true      # or light = true, or omit for auto-detection
+    side-by-side = true
+[merge]
+    conflictStyle = zdiff3
