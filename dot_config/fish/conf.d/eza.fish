@@ -15,4 +15,6 @@ if type -q eza
     function tree
         lt $extra_flags
     end
+
+    set -gx EZA_CONFIG_DIR ~/.config/eza
 end
