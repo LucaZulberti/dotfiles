@@ -90,12 +90,29 @@ C-g = [
   ":reload-all",
 ]
 
+# Search and Replace with Scooter
+C-r = [
+  ":write-all",
+  ":insert-output scooter --no-stdin >/dev/tty",
+  ":redraw",
+  ":reload-all"
+]
+
 # Space as leader key
 [keys.normal.space]
 q = ":quit"       # Close current window
 Q = ":quit-all"   # Exit Helix
 w = ":write"      # Save current buffer
 W = ":write-all"  # Save all buffers
+
+# Replace file explorer with Yazi
+e = [
+  ':sh rm -f /tmp/unique-file-h21a434',
+  ':insert-output yazi "%{buffer_name}" --chooser-file=/tmp/unique-file-h21a434',
+  ':sh printf "\x1b[?1049h\x1b[?2004h" > /dev/tty',
+  ':open %sh{cat /tmp/unique-file-h21a434}',
+  ':redraw',
+]
 
 # ──────────────────────────────────────────────
 # INSERT MODE KEYBINDINGS
