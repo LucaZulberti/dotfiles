@@ -68,7 +68,10 @@ Optionally, install all LSPs:
 
 ```sh
 brew install \
-  llvm clang-format \
+  bash-language-server \
+  clang-format \
+  fish-lsp \
+  llvm \
   marksman \
   ruff \
   tombi
