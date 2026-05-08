@@ -2,7 +2,7 @@
 	name = Luca Zulberti
 {{- if eq .chezmoi.username "zulberti" }}
 	email = Luca.Zulberti@ingeniars.com
-	signingkey = {{ onepasswordRead "op://IngeniArs/GitHub Key/public_key" }} GitHub
+	signingkey = {{ onepasswordRead "op://IngeniArs/IngeniArs GitLab Key/public_key" }} IngeniArs GitLab
 {{ else }}
 	email = zulberti.luca@gmail.com
 	signingkey = {{ onepasswordRead "op://Private/GitHub Key/public_key" }} GitHub
