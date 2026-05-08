@@ -48,6 +48,8 @@ brew install \
   tree-sitter-cli \
   yazi ffmpeg-full sevenzip jq poppler resvg imagemagick-full font-symbols-only-nerd-font \
   zoxide
+
+ya pkg install
 ```
 
 ## Post-setup
@@ -58,12 +60,6 @@ Install Rust:
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 ```
 
-Install Yazi packages:
-
-```sh
-ya pkg install
-```
-
 Optionally, install all LSPs:
 
 ```sh
@@ -71,7 +67,6 @@ brew install \
   bash-language-server \
   clang-format \
   fish-lsp \
-  llvm \
   marksman \
   ruff \
   tombi
