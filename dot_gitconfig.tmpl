@@ -3,10 +3,10 @@
 {{- if eq .chezmoi.username "zulberti" }}
 	email = Luca.Zulberti@ingeniars.com
 	signingkey = {{ onepasswordRead "op://IngeniArs/IngeniArs GitLab Key/public_key" }} IngeniArs GitLab
-{{ else }}
+{{- else }}
 	email = zulberti.luca@gmail.com
 	signingkey = {{ onepasswordRead "op://Private/GitHub Key/public_key" }} GitHub
-{{ end -}}	
+{{- end }}    
 [init]
 	defaultBranch = main
 [protocol "file"]
@@ -18,20 +18,27 @@
 	required = true
 [diff "lockb"]
 	textconv = bun
-    binary = true
+	binary = true
 [commit]
-    gpgsign = true
+	gpgsign = true
 [tag]
-    gpgsign = true
+	gpgsign = true
 [gpg]
-    format = ssh
+	format = ssh
+{{- if and (eq .chezmoi.os "linux") (.chezmoi.kernel.osrelease | lower | contains "microsoft") }}
+[gpg.ssh]
+	program = ssh-keygen.exe
+{{- end }}
 [core]
-    pager = delta
+	pager = delta
+{{- if and (eq .chezmoi.os "linux") (.chezmoi.kernel.osrelease | lower | contains "microsoft") }}
+	sshcommand = ssh.exe
+{{- end }}
 [interactive]
-    diffFilter = delta --color-only
+	diffFilter = delta --color-only
 [delta]
-    navigate = true  # use n and N to move between diff sections
-    dark = true      # or light = true, or omit for auto-detection
-    side-by-side = true
+	navigate = true  # use n and N to move between diff sections
+	dark = true      # or light = true, or omit for auto-detection
+	side-by-side = true
 [merge]
-    conflictStyle = zdiff3
+	conflictStyle = zdiff3
