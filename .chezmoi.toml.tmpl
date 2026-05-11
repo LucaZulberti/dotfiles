@@ -1,2 +1,6 @@
 [onepassword]
+{{- if eq .chezmoi.username "luca" }}
+    mode = "account"
+{{- else }}
     mode = "service"
+{{- end }}    
