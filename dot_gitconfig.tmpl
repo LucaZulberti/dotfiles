@@ -25,8 +25,10 @@
 	gpgsign = true
 [gpg]
 	format = ssh
-{{- if and (eq .chezmoi.os "linux") (.chezmoi.kernel.osrelease | lower | contains "microsoft") }}
 [gpg.ssh]
+{{- if eq .chezmoi.os "darwin" }}
+	program = /Applications/1Password.app/Contents/MacOS/op-ssh-sign
+{{- else if and (eq .chezmoi.os "linux") (.chezmoi.kernel.osrelease | lower | contains "microsoft") }}
 	program = ssh-keygen.exe
 {{- end }}
 [core]
