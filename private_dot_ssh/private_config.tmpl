@@ -1,0 +1,23 @@
+# Read more about SSH config files: https://linux.die.net/man/5/ssh_config
+
+Host *
+{{- if eq .chezmoi.os "darwin" }}
+    IdentityAgent "~/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"
+{{- end }}
+    ForwardAgent yes
+
+{{- if eq .chezmoi.username "luca" }}
+# Casa
+###
+
+Host *.zulberti.local
+    User root
+    Port 22
+    IdentityFile ~/.ssh/id_ed25519_zulbertinet.pub
+{{- end }}
+
+# Github
+###
+
+Host github.com *.github.com
+    IdentityFile ~/.ssh/id_ed25519_github.pub
