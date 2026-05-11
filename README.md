@@ -60,6 +60,14 @@ Install Rust:
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 ```
 
+Install Python with Miniconda:
+
+```sh
+curl -O https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh \
+bash ./Miniconda3-latest-Linux-x86_64.sh -b -p "$HOME/miniconda3"
+rm ./Miniconda3-latest-Linux-x86_64.sh
+```
+
 Optionally, install all LSPs:
 
 ```sh
@@ -78,6 +86,8 @@ cd .repo.git
 git sparse-checkout set "vhdl_libraries"
 mv vhdl_libraries ~/.cargo
 cd ../ && rm -rf .repo.git
+
+pip install cmakelang
 ```
 
 

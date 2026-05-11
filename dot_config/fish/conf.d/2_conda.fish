@@ -10,3 +10,6 @@ else
     end
 end
 # <<< conda initialize <<<
+
+# Automatically activate base environment
+conda activate base

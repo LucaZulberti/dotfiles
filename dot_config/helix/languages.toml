@@ -1,4 +1,9 @@
 [[language]]
+name = "cmake"
+formatter = { command = "cmake-format", args = ["-"] }
+auto-format = true
+
+[[language]]
 name = "vhdl"
 auto-format = true
 formatter = { command = "vsg-format" }
