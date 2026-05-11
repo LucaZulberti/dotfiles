@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+OUTDIR="heic"
+QUALITY=82
+
+# Collect extensions from all arguments, default to common image formats
+if [[ $# -gt 0 ]]; then
+    EXTS=("$@")
+else
+    EXTS=(jpg jpeg png hif tiff tif webp)
+fi
+
+mkdir -p "$OUTDIR"
+
+# Build the -iname predicates: \( -iname "*.jpg" -o -iname "*.png" -o ... \)
+name_predicates=()
+for ext in "${EXTS[@]}"; do
+    name_predicates+=(-iname "*.${ext}" -o)
+done
+# Remove the trailing -o
+unset 'name_predicates[-1]'
+
+convert_file() {
+    local file="$1" outdir="$2" quality="$3"
+    vips heifsave "$file" "${outdir}/${file##*/}" --Q="$quality" \
+        && echo "✓  $file" \
+        || echo "✗  $file"  >&2
+}
+export -f convert_file
+
+echo Starting conversion...
+
+find . -maxdepth 1 -type f \( "${name_predicates[@]}" \) \
+| parallel -j "$(nproc)" convert_file {} "$OUTDIR" "$QUALITY"
+
+echo Done.

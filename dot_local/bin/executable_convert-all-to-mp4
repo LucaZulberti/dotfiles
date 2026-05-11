@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+mkdir -p mp4
+shopt -s nocaseglob   # enable case-insensitive globbing
+
+for f in *.{mp4,mov,mkv,avi}; do
+    [ -f "$f" ] || continue
+    ffmpeg -i "$f" -c:v h264_videotoolbox -q:v 10 -r 30 "mp4/$f.mp4"
+
+    # Seems neecessary, otherwise next ffmpeg will go slowly
+    sleep 10
+done
