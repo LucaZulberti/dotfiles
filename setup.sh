@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 
+# Install Homebrew
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
+# Install base packages
 brew install \
   1password-cli \
   bat \
@@ -26,4 +28,39 @@ brew install \
   yazi ffmpeg-full sevenzip jq poppler resvg imagemagick-full font-symbols-only-nerd-font \
   zoxide
 
+# Install Node.js
+fnm i --lts --use
+
+# Install yarn packages
 ya pkg install
+
+# Install Rust
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+
+# Install Python with Miniconda
+curl -O https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
+bash ./Miniconda3-latest-Linux-x86_64.sh -b -p "$HOME/miniconda3"
+rm ./Miniconda3-latest-Linux-x86_64.sh
+
+# Install LSPs from Homebrew
+brew install \
+  bash-language-server \
+  clang-format \
+  fish-lsp \
+  marksman \
+  ruff \
+  tombi
+
+# Install VHDL LSP from Rust Cargo
+cargo install vhdl_ls
+git clone --depth 1 --filter=blob:none --sparse "https://github.com/VHDL-LS/rust_hdl.git" .repo.git
+cd .repo.git
+git sparse-checkout set "vhdl_libraries"
+mv vhdl_libraries ~/.cargo
+cd ../ && rm -rf .repo.git
+
+# Install CMake LSP using Python PIP
+pip install cmakelang
+
+# Install commitlint with Node package manager
+npm install -g -D @commitlint/cli @commitlint/config-conventional
