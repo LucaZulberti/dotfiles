@@ -1,3 +1,5 @@
+[include]
+	path = /home/{{- .chezmoi.username -}}/.config/delta/themes/catppuccin.gitconfig
 [user]
 	name = Luca Zulberti
 {{- if eq .chezmoi.username "zulberti" }}
@@ -25,7 +27,7 @@
 	gpgsign = true
 [gpg]
 	format = ssh
-[gpg.ssh]
+[gpg "ssh"]
 {{- if eq .chezmoi.os "darwin" }}
 	program = /Applications/1Password.app/Contents/MacOS/op-ssh-sign
 {{- else if and (eq .chezmoi.os "linux") (.chezmoi.kernel.osrelease | lower | contains "microsoft") }}
@@ -36,11 +38,12 @@
 {{- if and (eq .chezmoi.os "linux") (.chezmoi.kernel.osrelease | lower | contains "microsoft") }}
 	sshCommand = ssh.exe
 {{- end }}
+	hooksPath = /home/{{- .chezmoi.username -}}/.config/git/hooks
 [interactive]
 	diffFilter = delta --color-only
 [delta]
-	navigate = true  # use n and N to move between diff sections
-	dark = true      # or light = true, or omit for auto-detection
-	side-by-side = true
+	features = catppuccin-mocha
+	navigate = true
+	line-numbers = true
 [merge]
 	conflictStyle = zdiff3
