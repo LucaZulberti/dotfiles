@@ -1,0 +1,200 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+usage() {
+  cat >&2 <<'EOF'
+usage:
+  git-upstream-derived-tag [options] SUFFIX
+
+Creates a tag on the current HEAD using the nearest upstream remote tag
+reachable from the current branch history.
+
+Example:
+  git-upstream-derived-tag multiblock
+
+If the nearest upstream tag is:
+  3.35.0
+
+the new tag will be:
+  3.35.0+SUFFIX
+
+Options:
+  --dry-run        Show what would be done, but do not create or push a tag
+  --no-push        Create the local tag, but do not push it to origin
+  --force          Replace an existing local tag with the same name
+  -h, --help       Show this help
+EOF
+}
+
+die() {
+  printf 'error: %s\n' "$*" >&2
+  exit 1
+}
+
+info() {
+  printf '%s\n' "$*" >&2
+}
+
+dry_run=false
+push_tag=true
+force=false
+
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    --dry-run)
+      dry_run=true
+      shift
+      ;;
+    --no-push)
+      push_tag=false
+      shift
+      ;;
+    --force)
+      force=true
+      shift
+      ;;
+    -h|--help)
+      usage
+      exit 0
+      ;;
+    --)
+      shift
+      break
+      ;;
+    -*)
+      die "unknown option: $1"
+      ;;
+    *)
+      break
+      ;;
+  esac
+done
+
+[ "$#" -eq 1 ] || {
+  usage
+  exit 2
+}
+
+suffix="$1"
+
+case "$suffix" in
+  '')
+    die "suffix must not be empty"
+    ;;
+  *[!A-Za-z0-9.]*)
+    die "suffix must contain only letters, digits, or dots for Python-compatible local versions"
+    ;;
+esac
+
+git rev-parse --is-inside-work-tree >/dev/null 2>&1 ||
+  die "not inside a Git work tree"
+
+repo_root="$(git rev-parse --show-toplevel)"
+cd "$repo_root"
+
+current_branch="$(git symbolic-ref --quiet --short HEAD || true)"
+[ -n "$current_branch" ] ||
+  die "HEAD is detached; checkout a branch first"
+
+git remote get-url origin >/dev/null 2>&1 ||
+  die "required remote 'origin' does not exist"
+
+git remote get-url upstream >/dev/null 2>&1 ||
+  die "required remote 'upstream' does not exist"
+
+origin_url="$(git remote get-url origin)"
+upstream_url="$(git remote get-url upstream)"
+
+info "Repository: $repo_root"
+info "Current branch: $current_branch"
+info "origin: $origin_url"
+info "upstream: $upstream_url"
+
+git diff --quiet ||
+  die "working tree has unstaged changes; commit or stash first"
+
+git diff --cached --quiet ||
+  die "index has staged changes; commit or unstage first"
+
+git ls-remote --exit-code --heads origin >/dev/null 2>&1 ||
+  die "cannot read remote 'origin'"
+
+git ls-remote --exit-code --heads upstream >/dev/null 2>&1 ||
+  die "cannot read remote 'upstream'"
+
+git ls-remote --exit-code --tags upstream >/dev/null 2>&1 ||
+  die "remote 'upstream' has no tags or cannot list tags"
+
+info "Fetching upstream tags into refs/upstream-tags/*"
+git fetch --quiet --no-tags upstream '+refs/tags/*:refs/upstream-tags/*'
+
+best_tag=''
+best_ref=''
+best_distance=''
+
+while IFS= read -r ref; do
+  tag_name="${ref#refs/upstream-tags/}"
+
+  tag_commit="$(git rev-parse --quiet --verify "${ref}^{commit}" 2>/dev/null || true)"
+  [ -n "$tag_commit" ] || continue
+
+  if git merge-base --is-ancestor "$tag_commit" HEAD; then
+    distance="$(git rev-list --count "${tag_commit}..HEAD")"
+
+    if [ -z "$best_distance" ] || [ "$distance" -lt "$best_distance" ]; then
+      best_distance="$distance"
+      best_tag="$tag_name"
+      best_ref="$ref"
+    fi
+  fi
+done < <(git for-each-ref --format='%(refname)' refs/upstream-tags)
+
+[ -n "$best_tag" ] ||
+  die "no upstream tag is reachable from current HEAD"
+
+new_tag="${best_tag}+${suffix}"
+
+info "Nearest upstream tag: $best_tag"
+info "Distance from HEAD: $best_distance commits"
+info "New tag: $new_tag"
+
+if git rev-parse --quiet --verify "refs/tags/$new_tag" >/dev/null; then
+  if [ "$force" = true ]; then
+    info "Replacing existing local tag: $new_tag"
+    if [ "$dry_run" = false ]; then
+      git tag -d "$new_tag" >/dev/null
+    fi
+  else
+    die "local tag already exists: $new_tag"
+  fi
+fi
+
+if git ls-remote --exit-code --tags upstream "refs/tags/$new_tag" >/dev/null 2>&1; then
+  die "tag already exists on upstream: $new_tag"
+fi
+
+message="Derived from upstream tag ${best_tag} on branch ${current_branch}"
+
+if [ "$dry_run" = true ]; then
+  info "Dry run: would create annotated tag:"
+  info "  git tag -a '$new_tag' -m '$message'"
+  if [ "$push_tag" = true ]; then
+    info "Dry run: would push:"
+    info "  git push origin 'refs/tags/$new_tag'"
+  fi
+  exit 0
+fi
+
+git tag -a "$new_tag" -m "$message"
+
+if [ "$push_tag" = true ]; then
+  git push origin "refs/tags/$new_tag"
+fi
+
+info "Created tag: $new_tag"
+
+if [ "$push_tag" = true ]; then
+  info "Pushed tag to origin: $new_tag"
+else
+  info "Tag was created locally only."
+fi
