@@ -16,6 +16,7 @@ brew install \
   fnm \
   fzf \
   git git-delta git-filter-repo \
+  golang \
   helix \
   lazygit \
   nvim \
@@ -64,3 +65,10 @@ pip install cmakelang
 
 # Install commitlint with Node package manager
 npm install -g -D @commitlint/cli @commitlint/config-conventional
+
+# Install EFM Language Server with GO
+go install github.com/mattn/efm-langserver@latest
+
+# Install VHDL Style Guide formatter from custom repo
+pip install --upgrade --force-reinstall \                                                                                                     (base) │ NOR   setup.sh [+]                                                                                                                     1 sel  73:1  bash
+  "vsg @ git+https://github.com/lzulberti/vhdl-style-guide.git@3.35.0+multiblock"

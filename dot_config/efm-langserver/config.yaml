@@ -1,0 +1,35 @@
+version: 2
+
+root-markers:
+  - .git/
+  - vsg_config.yaml
+  - vsg_config.yml
+  - vsg_config.json
+  - vsg.yaml
+  - vsg.yml
+  - vsg.json
+  - .vsg_config.yaml
+  - .vsg_config.yml
+  - .vsg_config.json
+  - .vsg.yaml
+  - .vsg.yml
+  - .vsg.json
+
+tools:
+  vhdl-vsg: &vhdl-vsg
+    lint-command: "vsg-efm lint ${INPUT}"
+    lint-stdin: true
+    lint-ignore-exit-code: true
+    lint-after-open: true
+    lint-on-save: true
+    lint-source: vsg
+    lint-formats:
+      - "%f:%l:%c: %t: %m"
+
+    format-command: "vsg-efm format ${INPUT}"
+    format-stdin: true
+    format-ignore-exit-code: false
+
+languages:
+  vhdl:
+    - <<: *vhdl-vsg

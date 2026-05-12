@@ -1,3 +1,8 @@
+[language-server.efm]
+command = "efm-langserver"
+args = ["-c", "/home/{{ .chezmoi.username }}/.config/efm-langserver/config.yaml"]
+config = { documentFormatting = true }
+
 [[language]]
 name = "cmake"
 formatter = { command = "cmake-format", args = ["-"] }
@@ -6,7 +11,11 @@ auto-format = true
 [[language]]
 name = "vhdl"
 auto-format = true
-formatter = { command = "vsg-format" }
+persistent-diagnostic-sources = ["vsg"]
+language-servers = [
+  { name = "efm", only-features = ["diagnostics", "format"] },
+  { name = "vhdl_ls", except-features = ["format"] },
+]
 
 [[language]]
 name = "typescript"
