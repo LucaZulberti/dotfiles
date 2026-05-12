@@ -1,8 +1,7 @@
 if type -q git
     alias gs="git status"
     alias gd="git diff"
-    alias gl="git log --all"
-    alias gt="git log --all --oneline --graph"
+    alias gl="git l --all --color | devmoji --log --color"
     alias gp="git push"
     alias gP="git pull -p"
     alias gf="git fetch -p --all"
