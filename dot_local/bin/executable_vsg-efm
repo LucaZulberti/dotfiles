@@ -10,21 +10,13 @@ fi
 mode="$1"
 orig="$2"
 
-suffix=".vhd"
-case "$orig" in
-  *.vhdl|*.VHDL) suffix=".vhdl" ;;
-  *.vhd|*.VHD) suffix=".vhd" ;;
-esac
-
+# Create temporary directory for log and format operations
 tmpdir="$(mktemp -d)"
-tmp="$tmpdir/input$suffix"
 
 cleanup() {
   rm -rf "$tmpdir"
 }
 trap cleanup EXIT
-
-cat > "$tmp"
 
 config_names=(
   vsg_config.yaml vsg_config.yml vsg_config.json
@@ -78,10 +70,28 @@ if [ -n "$config" ]; then
   vsg_args=(-c "$config")
 fi
 
+# Calculate relative path of orig file with respect to config file
+config_dir="$(dirname "$config")"
+orig_rel="${orig#"$config_dir"/}"
+
 case "$mode" in
   format)
+    suffix=".vhd"
+    case "$orig" in
+      *.vhdl|*.VHDL) suffix=".vhdl" ;;
+      *.vhd|*.VHD) suffix=".vhd" ;;
+    esac
+
+    curdir="$(pwd)"
+    cd $tmpdir
+
+    # Recreate directory structure
+    mkdir -p $(dirname $orig_rel)
+    cat > "$tmp"
+
     set +e
-    vsg "${vsg_args[@]}" -of syntastic --fix -f "$tmp" >"$tmpdir/vsg.log" 2>&1
+    echo vsg "${vsg_args[@]}" -of syntastic --fix -f "$orig_rel" >"$tmpdir/vsg.echo" 2>&1
+    vsg "${vsg_args[@]}" -of syntastic --fix -f "$orig_rel" >"$tmpdir/vsg.log" 2>&1
     status=$?
     set -e
 
@@ -92,12 +102,13 @@ case "$mode" in
       exit "$status"
     fi
 
-    cat "$tmp"
+    cd "$curdir"
     ;;
 
   lint)
     set +e
-    vsg "${vsg_args[@]}" -of syntastic -f "$tmp" >"$tmpdir/vsg.out" 2>"$tmpdir/vsg.err"
+    echo vsg "${vsg_args[@]}" -of syntastic -f "$orig_rel" >"$tmpdir/vsg.echo" 2>&1
+    vsg "${vsg_args[@]}" -of syntastic -f "$orig_rel" >"$tmpdir/vsg.out" 2>"$tmpdir/vsg.err"
     status=$?
     set -e
 
@@ -107,10 +118,9 @@ case "$mode" in
       exit "$status"
     fi
 
-    display_file="${orig:-$tmp}"
 
     cat "$tmpdir/vsg.out" "$tmpdir/vsg.err" |
-      awk -v file="$display_file" '
+      awk -v file="$orig" '
         match($0, /^(ERROR|WARNING): [^()]+[(]([0-9]+)[)]([^[:space:]]+) -- (.*)$/, m) {
           sev = (m[1] == "ERROR") ? "E" : "W"
           printf "%s:%s:1: %s: %s -- %s\n", file, m[2], sev, m[3], m[4]
