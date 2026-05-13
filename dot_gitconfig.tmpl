@@ -38,7 +38,7 @@
 {{- if and (eq .chezmoi.os "linux") (.chezmoi.kernel.osrelease | lower | contains "microsoft") }}
 	sshCommand = ssh.exe
 {{- end }}
-	hooksPath = /home/{{- .chezmoi.username -}}/.config/git/hooks
+	hooksPath = /home/{{- .chezmoi.username -}}/.commitlint/hooks
 [interactive]
 	diffFilter = delta --color-only
 [delta]

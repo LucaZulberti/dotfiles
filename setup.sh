@@ -63,10 +63,10 @@ cd ../ && rm -rf .repo.git
 # Install CMake LSP using Python PIP
 pip install cmakelang
 
-# Install commitlint with Node package manager
-npm install -g -D @commitlint/cli @commitlint/config-conventional
+# Install commitlint with Go
+go install github.com/conventionalcommit/commitlint@latest
 
-# Install EFM Language Server with GO
+# Install EFM Language Server with Go
 go install github.com/mattn/efm-langserver@latest
 
 # Install VHDL Style Guide formatter from custom repo

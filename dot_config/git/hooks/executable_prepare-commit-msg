@@ -1,3 +1,0 @@
-#!/usr/bin/env sh
-set -eu
-commitlint -g ~/.config/git/commitlint.config.js < "$1"
