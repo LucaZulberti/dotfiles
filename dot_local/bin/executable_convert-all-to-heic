@@ -23,9 +23,12 @@ unset 'name_predicates[-1]'
 
 convert_file() {
     local file="$1" outdir="$2" quality="$3"
-    vips heifsave "$file" "${outdir}/${file##*/}" --Q="$quality" \
-        && echo "✓  $file" \
-        || echo "✗  $file"  >&2
+    local base="${file##*/}"
+    local stem="${base%.*}"
+
+    vips heifsave "$file" "${outdir}/${stem}.heic" --Q="$quality" \
+        && echo "✓  $file -> ${stem}.heic" \
+        || echo "✗  $file" >&2
 }
 export -f convert_file
 
