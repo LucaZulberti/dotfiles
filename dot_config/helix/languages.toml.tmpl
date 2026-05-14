@@ -4,6 +4,12 @@ args = ["-c", "/home/{{ .chezmoi.username }}/.config/efm-langserver/config.yaml"
 config = { documentFormatting = true }
 
 [[language]]
+name = "git-commit"
+rulers = [72, 100]
+text-width = 100
+soft-wrap = { enable = true, wrap-at-text-width = true }
+
+[[language]]
 name = "cmake"
 formatter = { command = "cmake-format", args = ["-"] }
 auto-format = true
