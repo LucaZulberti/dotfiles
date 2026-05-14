@@ -1,0 +1,10 @@
+# Config relating to git
+git:
+
+ # Config relating to committing
+  commit:
+    # Automatic WYSIWYG wrapping of the commit message as you type
+    autoWrapCommitMessage: true
+
+    # If autoWrapCommitMessage is true, the width to wrap to
+    autoWrapWidth: 100
