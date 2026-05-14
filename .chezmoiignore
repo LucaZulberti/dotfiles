@@ -1,11 +1,14 @@
 setup.sh
 README.md
-{{ if ne .chezmoi.os "darwin" }}
+{{- if ne .chezmoi.os "darwin" }}
 Library/
-{{ end }}
-{{ if ne .chezmoi.os "linux" }}
+{{- end }}
+{{- if ne .chezmoi.os "linux" }}
+.config/fish/conf.d/wsl.fish
 .config/systemd
-{{ end }}
-{{ if ne .chezmoi.username "luca" }}
+{{- else if not (.chezmoi.kernel.osrelease | lower | contains "microsoft") }}
+.config/fish/conf.d/wsl.fish
+{{- end }}
+{{- if ne .chezmoi.username "luca" }}
 .ssh/id_ed25519_zulbertinet.pub
-{{ end }}
+{{- end }}
