@@ -32,7 +32,7 @@ brew install \
 # Install Node.js
 fnm i --lts --use
 
-# Install yarn packages
+# Install Yazi packages
 ya pkg install
 
 # Install Rust
@@ -72,3 +72,6 @@ go install github.com/mattn/efm-langserver@latest
 # Install VHDL Style Guide formatter from custom repo
 pip install --upgrade --force-reinstall \                                                                                                     (base) │ NOR   setup.sh [+]                                                                                                                     1 sel  73:1  bash
   "vsg @ git+https://github.com/lzulberti/vhdl-style-guide.git@3.35.0+multiblock"
+
+# Install devmoji with Node.js
+npm install -g devmoji
