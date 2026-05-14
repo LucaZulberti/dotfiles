@@ -23,6 +23,7 @@ brew install \
   ripgrep \
   scooter \
   sesh \
+  sk \
   television \
   tmux tmuxp gitmux \
   tree-sitter-cli \
@@ -78,3 +79,6 @@ pip install --upgrade --force-reinstall \                                       
 
 # Install devmoji with Node.js
 npm install -g devmoji
+
+# Install Zellij with Cargo
+cargo binstall zellij
