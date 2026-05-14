@@ -4,14 +4,11 @@ if status --is-interactive
         set ZELLIJ_AUTO_EXIT false
 
         if not set -q ZELLIJ
-            set -l session (
-                zellij list-sessions 2>/dev/null |
-                sk -0 -1 --ansi |
-                string replace -r '\[Created.*' '' |
-                string trim
-            )
-
-            if test -n "$session" && test "$ZELLIJ_AUTO_ATTACH" = true
+            set -l sessions (zellij list-sessions 2>/dev/null)
+            if test -n "$sessions" && test "$ZELLIJ_AUTO_ATTACH" = true
+                set -l session (
+                    printf '%s' "$sessions" | sk -1 --ansi | string replace -r '\[Created.*' '' | string trim
+                )
                 zellij attach "$session"
             else
                 zellij
