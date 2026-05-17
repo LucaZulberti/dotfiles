@@ -54,6 +54,7 @@ brew install \
   fish-lsp \
   marksman \
   ruff \
+  shfmt \
   tombi
 
 # Install VHDL LSP from Rust Cargo
@@ -74,7 +75,7 @@ go install github.com/conventionalcommit/commitlint@latest
 go install github.com/mattn/efm-langserver@latest
 
 # Install VHDL Style Guide formatter from custom repo
-pip install --upgrade --force-reinstall \                                                                                                     (base) │ NOR   setup.sh [+]                                                                                                                     1 sel  73:1  bash
+pip install --upgrade --force-reinstall \
   "vsg @ git+https://github.com/lzulberti/vhdl-style-guide.git@3.35.0+multiblock"
 
 # Install devmoji with Node.js

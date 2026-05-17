@@ -4,6 +4,11 @@ args = ["-c", "/home/{{ .chezmoi.username }}/.config/efm-langserver/config.yaml"
 config = { documentFormatting = true }
 
 [[language]]
+name = "bash"
+formatter = { command = "shfmt", args = ["-i", "2"] }
+auto-format = true
+
+[[language]]
 name = "git-commit"
 rulers = [72, 100]
 text-width = 100
@@ -16,42 +21,42 @@ auto-format = true
 
 [[language]]
 name = "vhdl"
-auto-format = true
 persistent-diagnostic-sources = ["vsg"]
 language-servers = [
   { name = "efm", only-features = ["diagnostics", "format"] },
   { name = "vhdl_ls", except-features = ["format"] },
 ]
+auto-format = true
 
 [[language]]
 name = "typescript"
-auto-format = true
 language-servers = [
   { name = "typescript-language-server", except-features = ["format"] },
   { name = "angular", except-features = ["format"] },
 ]
 formatter = { command = "prettier", args = ["--stdin-filepath", "%{buffer_name}"] }
+auto-format = true
 
 [[language]]
 name = "html"
-auto-format = true
 language-servers = [
   { name = "vscode-html-language-server", except-features = ["format"] },
   { name = "angular", except-features = ["format"] },
 ]
 formatter = { command = "prettier", args = ["--stdin-filepath", "%{buffer_name}"] }
+auto-format = true
 
 [[language]]
 name = "css"
-auto-format = true
 formatter = { command = "prettier", args = ["--stdin-filepath", "%{buffer_name}"] }
+auto-format = true
 
 [[language]]
 name = "scss"
-auto-format = true
 formatter = { command = "prettier", args = ["--stdin-filepath", "%{buffer_name}"] }
+auto-format = true
 
 [[language]]
 name = "json"
-auto-format = true
 formatter = { command = "prettier", args = ["--stdin-filepath", "%{buffer_name}"] }
+auto-format = true
