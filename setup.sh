@@ -55,7 +55,8 @@ brew install \
   marksman \
   ruff \
   shfmt \
-  tombi
+  tombi \
+  yaml-language-server
 
 # Install VHDL LSP from Rust Cargo
 cargo install vhdl_ls
