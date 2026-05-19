@@ -1,5 +1,6 @@
 setup.sh
 README.md
+CLAUDE.md
 {{- if ne .chezmoi.os "darwin" }}
 Library/
 {{- end }}
