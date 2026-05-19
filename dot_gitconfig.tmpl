@@ -28,6 +28,7 @@
 [gpg]
 	format = ssh
 [gpg "ssh"]
+	allowedSignersFile = /home/{{- .chezmoi.username -}}/.config/git/allowed_signers
 {{- if eq .chezmoi.os "darwin" }}
 	program = /Applications/1Password.app/Contents/MacOS/op-ssh-sign
 {{- else if and (eq .chezmoi.os "linux") (.chezmoi.kernel.osrelease | lower | contains "microsoft") }}
