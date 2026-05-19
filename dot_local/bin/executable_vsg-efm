@@ -87,7 +87,7 @@ case "$mode" in
 
     # Recreate directory structure
     mkdir -p $(dirname $orig_rel)
-    cat > "$tmp"
+    cat > "$orig_rel"
 
     set +e
     echo vsg "${vsg_args[@]}" -of syntastic --fix -f "$orig_rel" >"$tmpdir/vsg.echo" 2>&1
