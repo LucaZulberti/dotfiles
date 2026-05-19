@@ -42,10 +42,27 @@ curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 # Install Cargo binstall extension
 curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash
 
-# Install Python with Miniconda
-curl -O https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
-bash ./Miniconda3-latest-Linux-x86_64.sh -b -p "$HOME/miniconda3"
-rm ./Miniconda3-latest-Linux-x86_64.sh
+# Install Python with Miniconda (OS-aware installer)
+case "$(uname -s)" in
+  Darwin)
+    arch="$(uname -m)"
+    if [ "$arch" = "arm64" ]; then
+      installer="Miniconda3-latest-MacOSX-arm64.sh"
+    else
+      installer="Miniconda3-latest-MacOSX-x86_64.sh"
+    fi
+    ;;
+  Linux)
+    installer="Miniconda3-latest-Linux-x86_64.sh"
+    ;;
+esac
+curl -O "https://repo.anaconda.com/miniconda/$installer"
+bash "./$installer" -b -p "$HOME/miniconda3"
+rm "./$installer"
+
+# Activate conda so subsequent pip installs target the miniconda env, not system Python
+eval "$($HOME/miniconda3/bin/conda shell.bash hook)"
+conda activate base
 
 # Install LSPs from Homebrew
 brew install \
@@ -79,8 +96,13 @@ go install github.com/mattn/efm-langserver@latest
 pip install --upgrade --force-reinstall \
   "vsg @ git+https://github.com/lzulberti/vhdl-style-guide.git@3.35.0+multiblock"
 
-# Install devmoji with Node.js
-npm install -g devmoji
+# Install npm-based tooling (devmoji + helix-referenced LSPs/formatter)
+npm install -g \
+  devmoji \
+  prettier \
+  typescript-language-server \
+  @angular/language-server \
+  vscode-langservers-extracted
 
 # Install Zellij with Cargo
 cargo binstall zellij
