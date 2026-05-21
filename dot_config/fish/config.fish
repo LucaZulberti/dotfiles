@@ -7,7 +7,7 @@ if status --is-interactive
             set -l sessions (zellij list-sessions 2>/dev/null)
             if test -n "$sessions" && test "$ZELLIJ_AUTO_ATTACH" = true
                 set -l session (
-                    printf '%s' "$sessions" | sk -1 --ansi | string replace -r '\[Created.*' '' | string trim
+                    printf '%s\n' $sessions | sk -1 --ansi | string replace -r '\[Created.*' '' | string trim
                 )
                 zellij attach "$session"
             else
