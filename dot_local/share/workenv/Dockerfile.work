@@ -12,11 +12,14 @@ ARG HOST_GID=1000
 # Create group/user conditionally
 RUN if [ "$TARGET_OS" = "linux" ]; then \
         sudo groupadd -g $HOST_GID $HOST_GROUP || true && \
-        sudo useradd -m -d /home/$HOST_USER -s /usr/bin/fish -g $HOST_GID -u $HOST_UID $HOST_USER || true ; \
+        sudo useradd -m -d /home/$HOST_USER -s /home/linuxbrew/.linuxbrew/bin/fish -g $HOST_GID -u $HOST_UID $HOST_USER || true ; \
     else \
         sudo groupadd $HOST_GROUP || true && \
-        sudo useradd -m -d /home/$HOST_USER -s /usr/bin/fish -g $HOST_GROUP $HOST_USER || true ; \
+        sudo useradd -m -d /home/$HOST_USER -s /home/linuxbrew/.linuxbrew/bin/fish -g $HOST_GROUP $HOST_USER || true ; \
     fi
+
+# Grant the new user passwordless sudo (matches the brew base image behavior)
+RUN echo "$HOST_USER ALL=(ALL) NOPASSWD:ALL" | sudo tee /etc/sudoers.d/$HOST_USER
 
 # Update permissions on linuxbrew user home
 RUN sudo chown -R $HOST_USER:$HOST_GROUP /home/linuxbrew
@@ -24,14 +27,66 @@ RUN sudo chown -R $HOST_USER:$HOST_GROUP /home/linuxbrew
 # Switch to non-root user
 USER $HOST_USER
 
-# Install Node.js v24 LTS
-RUN fnm install lts/krypton
+# Ensure linuxbrew bins are visible to subsequent RUN layers
+ENV PATH="/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin:${PATH}"
+
+# Install Node.js (LTS) via fnm and global npm packages
+RUN eval "$(fnm env --shell bash)" && \
+    fnm install --lts && \
+    fnm use lts-latest && \
+    fnm default lts-latest && \
+    npm install -g \
+        devmoji \
+        prettier \
+        typescript-language-server \
+        @angular/language-server \
+        vscode-langservers-extracted
 
 # Install Rust (and Cargo) via rustup
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-
-# Add Cargo bin to PATH
 ENV PATH="/home/$HOST_USER/.cargo/bin:${PATH}"
+
+# Install cargo-binstall (binary installer used below for zellij)
+RUN curl -L --proto '=https' --tlsv1.2 -sSf \
+    https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash
+
+# Install VHDL LSP and sparse-clone its bundled vhdl_libraries
+RUN cargo install vhdl_ls && \
+    tmpdir="$(mktemp -d)" && \
+    git clone --depth 1 --filter=blob:none --sparse \
+        https://github.com/VHDL-LS/rust_hdl.git \
+        "$tmpdir/rust_hdl" && \
+    git -C "$tmpdir/rust_hdl" sparse-checkout set "vhdl_libraries" && \
+    rm -rf "$HOME/.cargo/vhdl_libraries" && \
+    mv "$tmpdir/rust_hdl/vhdl_libraries" "$HOME/.cargo/vhdl_libraries" && \
+    rm -rf "$tmpdir"
+
+# Install Zellij via cargo-binstall
+RUN cargo binstall --no-confirm zellij
+
+# Install Miniconda (Linux only — these images are linux/amd64 and linux/arm64)
+RUN arch="$(uname -m)" && \
+    case "$arch" in \
+        x86_64)  installer="Miniconda3-latest-Linux-x86_64.sh" ;; \
+        aarch64) installer="Miniconda3-latest-Linux-aarch64.sh" ;; \
+        *) echo "error: unsupported Linux architecture: $arch" >&2; exit 1 ;; \
+    esac && \
+    tmpdir="$(mktemp -d)" && \
+    curl -fsSLo "$tmpdir/$installer" "https://repo.anaconda.com/miniconda/$installer" && \
+    bash "$tmpdir/$installer" -b -p "$HOME/miniconda3" && \
+    rm -rf "$tmpdir"
+ENV PATH="/home/$HOST_USER/miniconda3/bin:${PATH}"
+
+# Install Python tooling: CMake LSP + VHDL Style Guide formatter
+RUN python -m pip install --upgrade pip && \
+    python -m pip install cmakelang && \
+    python -m pip install --upgrade --force-reinstall \
+        "vsg @ git+https://github.com/lzulberti/vhdl-style-guide.git@3.35.0+multiblock"
+
+# Install Go-based tooling (commitlint hook + efm-langserver)
+RUN go install github.com/conventionalcommit/commitlint@latest && \
+    go install github.com/mattn/efm-langserver@latest
+ENV PATH="/home/$HOST_USER/go/bin:${PATH}"
 
 # Create local directory to mount volume for persistance with correct uid:gid
 RUN mkdir -p ~/.local
@@ -49,4 +104,4 @@ RUN ln -s ~/.config/tmux/conf/gitmux.conf ~/.gitmux.conf
 WORKDIR /work
 
 # Use fish shell as entrypoint
-ENTRYPOINT [ "/usr/bin/fish" ]
+ENTRYPOINT [ "/home/linuxbrew/.linuxbrew/bin/fish" ]
