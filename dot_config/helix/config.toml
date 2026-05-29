@@ -99,6 +99,10 @@ C-r = [
   ":reload-all"
 ]
 
+# Move paragraph shortcuts
+"{" = "goto_prev_paragraph"
+"}" = "goto_next_paragraph"
+
 # Space as leader key
 [keys.normal.space]
 q = ":buffer-close"      # Close current buffer
@@ -147,3 +151,7 @@ home      = "no_op"
 end       = "no_op"
 
 "C-c" = "normal_mode"   # Return to normal mode (alternative to Escape)
+
+# Move paragraph shortcuts
+"{" = "goto_prev_paragraph"
+"}" = "goto_next_paragraph"
