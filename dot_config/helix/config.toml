@@ -72,9 +72,9 @@ pagedown  = "no_op"
 home      = "no_op"
 end       = "no_op"
 
-# Buffer management
-"C-q" = ":buffer-close"       # Close current buffer
-"C-Q" = ":buffer-close-all"   # Close all buffers
+# Quit shortcuts
+"C-q" = ":quit"       # Close current window
+"C-Q" = ":quit-all"   # Exit Helix
 
 # Half-page scroll
 "C-d" = ["half_page_down"]
@@ -101,10 +101,10 @@ C-r = [
 
 # Space as leader key
 [keys.normal.space]
-q = ":quit"       # Close current window
-Q = ":quit-all"   # Exit Helix
-w = ":write"      # Save current buffer
-W = ":write-all"  # Save all buffers
+q = ":buffer-close"      # Close current buffer
+Q = ":buffer-close-all"  # Close all buffers
+w = ":write"             # Save current buffer
+W = ":write-all"         # Save all buffers
 
 # Replace file explorer with Yazi
 e = [
@@ -128,6 +128,7 @@ pageup    = "no_op"
 pagedown  = "no_op"
 home      = "no_op"
 end       = "no_op"
+tab       = "insert_tab"
 
 "C-c" = "normal_mode"   # Return to normal mode (alternative to Escape)
 
