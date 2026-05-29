@@ -1,5 +1,5 @@
 [onepassword]
-{{- if eq .chezmoi.username "luca" }}
+{{- if or (eq .chezmoi.username "luca") (and (eq .chezmoi.os "linux") (.chezmoi.kernel.osrelease | lower | contains "microsoft")) }}
     mode = "account"
 {{- else }}
     mode = "service"
