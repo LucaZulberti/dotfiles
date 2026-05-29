@@ -51,6 +51,12 @@ min-width = 1              # Shrink the gutter to 1 digit on short files
 render = true              # Show vertical lines at each indent level
 
 # ──────────────────────────────────────────────
+# SOFT WRAP
+# ──────────────────────────────────────────────
+[editor.soft-wrap]
+enable = true
+
+# ──────────────────────────────────────────────
 # STATUS LINE
 # ──────────────────────────────────────────────
 [editor.statusline]
