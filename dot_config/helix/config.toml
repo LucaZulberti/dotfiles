@@ -91,7 +91,7 @@ end       = "no_op"
 C-g = [
   ":write-all",
   ":new",
-  ":insert-output lazygit",
+  ":insert-output gitui",
   ":buffer-close!",
   ":redraw",
   ":reload-all",
