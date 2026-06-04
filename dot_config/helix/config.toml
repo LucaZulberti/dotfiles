@@ -100,7 +100,7 @@ C-g = [
 # Search and Replace with Scooter
 C-r = [
   ":write-all",
-  ":insert-output scooter --no-stdin >/dev/tty",
+  ":insert-output scooter -a -e --no-stdin >/dev/tty",
   ":redraw",
   ":reload-all"
 ]
