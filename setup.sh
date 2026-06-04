@@ -62,9 +62,9 @@ brew install \
   fnm \
   fzf \
   git git-delta git-filter-repo \
+  gitui \
   golang \
   helix \
-  lazygit \
   nvim \
   ripgrep \
   scooter \
