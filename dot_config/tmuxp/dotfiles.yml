@@ -1,7 +1,7 @@
 session_name: config
 
 windows:
-  - window_name: workenv 
+  - window_name: chezmoi
     layout: main-vertical
     start_directory: ~/Git/config
     options:

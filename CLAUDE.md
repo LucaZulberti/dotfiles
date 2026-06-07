@@ -68,10 +68,6 @@ Common scopes match tool names: `helix`, `fish`, `tmux`, `gitui`, `yazi`, etc.
 
 Helix delegates formatting to external tools per language: `shfmt` (bash), `cmake-format` (cmake), `prettier` (yaml/ts/html/css/json), `vsg` via `efm-langserver` (VHDL). The `languages.toml.tmpl` template injects the current username into the efm-langserver path.
 
-## Docker dev environment
-
-`dot_local/bin/executable_workenv` + `dot_local/share/workenv/` provide a containerised dev environment that volume-mounts fish, helix, tmux, and other configs into the container.
-
 ## First-time setup
 
 ```sh
