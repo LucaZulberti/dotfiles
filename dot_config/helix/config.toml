@@ -90,6 +90,7 @@ end       = "no_op"
 # then close scratch, redraw and reload everything on exit
 C-g = [
   ":write-all",
+  ":sh type -q gitui",
   ":new",
   ":insert-output gitui",
   ":buffer-close!",
@@ -100,6 +101,7 @@ C-g = [
 # Search and Replace with Scooter
 C-r = [
   ":write-all",
+  ":sh type -q scooter",
   ":insert-output scooter -a -e --no-stdin >/dev/tty",
   ":redraw",
   ":reload-all"
@@ -118,10 +120,10 @@ W = ":write-all"         # Save all buffers
 
 # Replace file explorer with Yazi
 e = [
-  ':sh rm -f /tmp/unique-file-h21a434',
-  ':insert-output yazi "%{buffer_name}" --chooser-file=/tmp/unique-file-h21a434',
+  ':sh rm -f /tmp/helix-yazi-$PPID',
+  ':insert-output yazi "%{buffer_name}" --chooser-file=/tmp/helix-yazi-$PPID',
   ':sh printf "\x1b[?1049h\x1b[?2004h" > /dev/tty',
-  ':open %sh{cat /tmp/unique-file-h21a434}',
+  ':open %sh{cat /tmp/helix-yazi-$PPID 2>/dev/null}',
   ':redraw',
 ]
 

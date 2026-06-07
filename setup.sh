@@ -56,6 +56,7 @@ brew install \
   bottom \
   broot \
   chezmoi \
+  emoji-fzf \
   eza \
   fd \
   fish fisher \
@@ -256,3 +257,6 @@ else
   echo "chezmoi is not initialized, running init..."
   chezmoi init LucaZulberti
 fi
+
+echo "Verifying chezmoi managed files..."
+chezmoi verify || { echo "chezmoi verify failed — check template errors or missing 1Password items" >&2; exit 1; }

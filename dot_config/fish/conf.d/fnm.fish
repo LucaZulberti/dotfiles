@@ -1,3 +1,3 @@
 if type -q fnm
-    eval $(fnm env)
+    eval (fnm env --shell fish)
 end

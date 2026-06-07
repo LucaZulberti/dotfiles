@@ -1,5 +1,5 @@
 [include]
-	path = /home/{{- .chezmoi.username -}}/.config/delta/themes/catppuccin.gitconfig
+	path = {{ .chezmoi.homeDir }}/.config/delta/themes/catppuccin.gitconfig
 [user]
 	name = Luca Zulberti
 {{- if eq .chezmoi.username "zulberti" }}
@@ -39,7 +39,7 @@
 {{- if and (eq .chezmoi.os "linux") (.chezmoi.kernel.osrelease | lower | contains "microsoft") }}
 	sshCommand = ssh.exe
 {{- end }}
-	hooksPath = /home/{{- .chezmoi.username -}}/.commitlint/hooks
+	hooksPath = {{ .chezmoi.homeDir }}/.commitlint/hooks
 [interactive]
 	diffFilter = delta --color-only
 [delta]

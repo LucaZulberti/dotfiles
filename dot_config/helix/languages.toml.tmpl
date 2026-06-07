@@ -1,6 +1,6 @@
 [language-server.efm]
 command = "efm-langserver"
-args = ["-c", "/home/{{ .chezmoi.username }}/.config/efm-langserver/config.yaml"]
+args = ["-c", "{{ .chezmoi.homeDir }}/.config/efm-langserver/config.yaml"]
 config = { documentFormatting = true }
 
 [[language]]
