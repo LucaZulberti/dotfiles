@@ -72,7 +72,7 @@ brew install \
   sesh \
   sk \
   television \
-  tmux tmuxp gitmux \
+  tmux gitmux \
   tree-sitter-cli \
   yazi ffmpeg-full sevenzip jq poppler resvg imagemagick-full font-symbols-only-nerd-font \
   zoxide
