@@ -101,10 +101,9 @@ C-g = [
 # Search and Replace with Scooter
 C-r = [
   ":write-all",
-  ":sh type -q scooter",
-  ":insert-output scooter -a -e --no-stdin >/dev/tty",
+  ":insert-output scooter -a -e --no-stdin >/dev/tty || true",
+  ":reload-all",
   ":redraw",
-  ":reload-all"
 ]
 
 # Move paragraph shortcuts
@@ -121,7 +120,7 @@ W = ":write-all"         # Save all buffers
 # Replace file explorer with Yazi
 e = [
   ':sh rm -f /tmp/helix-yazi-$PPID',
-  ':insert-output yazi "%{buffer_name}" --chooser-file=/tmp/helix-yazi-$PPID',
+  ':insert-output yazi "%{buffer_name}" --chooser-file=/tmp/helix-yazi-$PPID || true',
   ':sh printf "\x1b[?1049h\x1b[?2004h" > /dev/tty',
   ':open %sh{cat /tmp/helix-yazi-$PPID 2>/dev/null}',
   ':redraw',
