@@ -4,6 +4,10 @@ args = ["-c", "{{ .chezmoi.homeDir }}/.config/efm-langserver/config.yaml"]
 config = { documentFormatting = true }
 
 [[language]]
+name = "python"
+auto-format = true
+
+[[language]]
 name = "bash"
 formatter = { command = "shfmt", args = ["-i", "2"] }
 auto-format = true
