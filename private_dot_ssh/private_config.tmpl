@@ -17,10 +17,13 @@ Host *.zulberti.local
     SendEnv OP_SERVICE_ACCOUNT_TOKEN
 {{- end }}
 
-{{- if eq .chezmoi.username "zulberti" }}
 # IngeniArs
 ###
 
+Host *.ingeniars.com
+    IdentityFile ~/.ssh/id_ed25519_ingeniars_gitlab.pub
+
+{{- if eq .chezmoi.username "zulberti" }}
 Host *.ing
     SendEnv OP_SERVICE_ACCOUNT_TOKEN
 {{- end }}
