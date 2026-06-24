@@ -76,22 +76,22 @@ orig_rel="${orig#"$config_dir"/}"
 
 case "$mode" in
   format)
-    suffix=".vhd"
-    case "$orig" in
-      *.vhdl|*.VHDL) suffix=".vhdl" ;;
-      *.vhd|*.VHD) suffix=".vhd" ;;
+    # Path to write inside the work tmpdir. When a config was found, preserve
+    # the file's path relative to it (some VSG rules are path-scoped). With no
+    # config -- or a file outside the config tree, where the strip above leaves
+    # orig_rel absolute -- fall back to the basename so we always write inside
+    # the tmpdir and never clobber the real file.
+    rel="$orig_rel"
+    case "$rel" in
+      ""|/*) rel="$(basename "$orig")" ;;
     esac
 
-    curdir="$(pwd)"
-    cd $tmpdir
-
-    # Recreate directory structure
-    mkdir -p $(dirname $orig_rel)
-    cat > "$orig_rel"
+    cd "$tmpdir"
+    mkdir -p "$(dirname "$rel")"
+    cat > "$rel"
 
     set +e
-    echo vsg "${vsg_args[@]}" -of syntastic --fix -f "$orig_rel" >"$tmpdir/vsg.echo" 2>&1
-    vsg "${vsg_args[@]}" -of syntastic --fix -f "$orig_rel" >"$tmpdir/vsg.log" 2>&1
+    vsg "${vsg_args[@]}" -of syntastic --fix -f "$rel" >"$tmpdir/vsg.log" 2>&1
     status=$?
     set -e
 
@@ -102,7 +102,8 @@ case "$mode" in
       exit "$status"
     fi
 
-    cd "$curdir"
+    # Emit the fixed file so Helix/efm can replace the buffer with it.
+    cat "$rel"
     ;;
 
   lint)
@@ -120,7 +121,7 @@ case "$mode" in
 
 
     cat "$tmpdir/vsg.out" "$tmpdir/vsg.err" |
-      awk -v file="$orig" '
+      gawk -v file="$orig" '
         match($0, /^(ERROR|WARNING): [^()]+[(]([0-9]+)[)]([^[:space:]]+) -- (.*)$/, m) {
           sev = (m[1] == "ERROR") ? "E" : "W"
           printf "%s:%s:1: %s: %s -- %s\n", file, m[2], sev, m[3], m[4]
