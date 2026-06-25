@@ -119,10 +119,14 @@ W = ":write-all"         # Save all buffers
 
 # Replace file explorer with Yazi
 e = [
-  ':sh rm -f /tmp/helix-yazi-$PPID',
-  ':insert-output yazi "%{buffer_name}" --chooser-file=/tmp/helix-yazi-$PPID || true',
+  ':sh set tmp "/tmp/helix-yazi-$PPID"; rm -f -- "$tmp"; : > "$tmp"',
+  ':insert-output yazi "%{buffer_name}" --chooser-file="/tmp/helix-yazi-$PPID" || true',
   ':sh printf "\x1b[?1049h\x1b[?2004h" > /dev/tty',
-  ':open %sh{cat /tmp/helix-yazi-$PPID 2>/dev/null}',
+  ':open %sh{printf "/tmp/helix-yazi-$PPID"}',
+  'select_all',
+  'split_selection_on_newline',
+  'goto_file',
+  ':buffer-close! %sh{printf "/tmp/helix-yazi-$PPID"}',
   ':redraw',
 ]
 
