@@ -1,4 +1,5 @@
-if not set -q __fish_theme_catppuccin_mocha
+if not set -q __fish_theme_saved
     fish_config theme choose catppuccin-mocha
-    set -U __fish_theme_catppuccin_mocha 1
+    fish_config theme save
+    set -U __fish_theme_saved 1
 end
