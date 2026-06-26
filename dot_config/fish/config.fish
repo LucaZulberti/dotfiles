@@ -1,5 +1,21 @@
 if status --is-interactive
     # -----------------------------
+    # Terminal feature probing
+    # -----------------------------
+
+    # fish 4 queries the TTY at startup (kitty keyboard \e[?u, XTVERSION,
+    # OSC 11 background, XTGETTCAP, DA1). zellij 0.44 misroutes those replies to
+    # freshly spawned pane and nested shells, so the responses leak onto the
+    # command line (garbage like "1e1d/2cfc", "…u", "…R"). Export the opt-out so
+    # every child shell (zellij panes, `chezmoi cd`, …) skips the probing.
+    #
+    # Feature flags are locked before config.fish runs, so the current shell is
+    # unaffected: a top-level shell launched directly by the terminal keeps the
+    # probing (the terminal answers correctly there, no leak) while its children
+    # inherit the opt-out.
+    set -gx fish_features no-query-term
+
+    # -----------------------------
     # Auto-start Zellij
     # -----------------------------
 
