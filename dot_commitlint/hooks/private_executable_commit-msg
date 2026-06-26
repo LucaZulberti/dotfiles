@@ -8,4 +8,4 @@ if ! type commitlint >/dev/null 2>/dev/null; then
   exit 1
 fi
 
-commitlint -g $HOME/.commitlint/commitlint.config.cjs -e $1
+commitlint -g "$HOME/.commitlint/commitlint.config.cjs" -e "$1"
