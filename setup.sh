@@ -74,6 +74,7 @@ brew install \
   helix \
   marksman \
   nvim \
+  parallel \
   ripgrep \
   ruff \
   scooter \
@@ -85,6 +86,7 @@ brew install \
   tombi \
   tree-sitter-cli \
   uv \
+  vips \
   yaml-language-server \
   yazi ffmpeg-full sevenzip jq poppler resvg imagemagick-full font-symbols-only-nerd-font \
   zoxide
@@ -153,17 +155,27 @@ fi
 cargo binstall zellij
 cargo install vhdl_ls
 
-tmpdir="$(mktemp -d)"
-trap 'rm -rf "$tmpdir"' EXIT
+# Track every temp dir in one trap so a later mktemp does not orphan an earlier
+# one (the trap body re-reads the array on exit).
+tmpdirs=()
+cleanup_tmpdirs() {
+  for d in "${tmpdirs[@]}"; do
+    rm -rf "$d"
+  done
+}
+trap cleanup_tmpdirs EXIT
+
+rust_tmp="$(mktemp -d)"
+tmpdirs+=("$rust_tmp")
 
 git clone --depth 1 --filter=blob:none --sparse \
   "https://github.com/VHDL-LS/rust_hdl.git" \
-  "$tmpdir/rust_hdl"
+  "$rust_tmp/rust_hdl"
 
-git -C "$tmpdir/rust_hdl" sparse-checkout set "vhdl_libraries"
+git -C "$rust_tmp/rust_hdl" sparse-checkout set "vhdl_libraries"
 
 rm -rf "$HOME/.cargo/vhdl_libraries"
-mv "$tmpdir/rust_hdl/vhdl_libraries" "$HOME/.cargo/vhdl_libraries"
+mv "$rust_tmp/rust_hdl/vhdl_libraries" "$HOME/.cargo/vhdl_libraries"
 
 # -----------------------------
 # Install Python with Miniconda
@@ -207,11 +219,11 @@ Linux)
 esac
 
 if [ ! -x "$HOME/miniconda3/bin/conda" ]; then
-  tmpdir="$(mktemp -d)"
-  trap 'rm -rf "$tmpdir"' EXIT
+  conda_tmp="$(mktemp -d)"
+  tmpdirs+=("$conda_tmp")
 
-  curl -fsSLo "$tmpdir/$installer" "https://repo.anaconda.com/miniconda/$installer"
-  bash "$tmpdir/$installer" -b -p "$HOME/miniconda3"
+  curl -fsSLo "$conda_tmp/$installer" "https://repo.anaconda.com/miniconda/$installer"
+  bash "$conda_tmp/$installer" -b -p "$HOME/miniconda3"
 fi
 
 # Activate conda so subsequent pip installs target Miniconda, not system Python
