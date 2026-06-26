@@ -13,7 +13,7 @@ if type -q eza
     alias lg="ls -lga --git"
 
     function tree
-        lt $extra_flags
+        lt $argv
     end
 
     set -gx EZA_CONFIG_DIR ~/.config/eza
