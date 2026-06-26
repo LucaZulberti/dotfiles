@@ -47,19 +47,23 @@ fi
 init_homebrew
 
 # -----------------------------
-# Install base packages
+# Install Brew packages
 # -----------------------------
 
 brew install \
   1password-cli \
+  bash-language-server \
   bat \
   bottom \
   broot \
   chezmoi \
+  clang-format \
   commitlint \
+  efm-langserver \
   eza \
   fd \
   fish fisher \
+  fish-lsp \
   fnm \
   fzf \
   gawk \
@@ -67,15 +71,20 @@ brew install \
   gitui \
   golang \
   helix \
+  marksman \
   nvim \
   ripgrep \
+  ruff \
   scooter \
   sesh \
+  shfmt \
   sk \
   television \
   tmux gitmux \
+  tombi \
   tree-sitter-cli \
   uv \
+  yaml-language-server \
   yazi ffmpeg-full sevenzip jq poppler resvg imagemagick-full font-symbols-only-nerd-font \
   zoxide
 
@@ -92,6 +101,17 @@ fnm default lts-latest
 
 # Refresh shell command lookup
 hash -r
+
+# -----------------------------
+# Install npm-based tooling
+# -----------------------------
+
+npm install -g \
+  devmoji \
+  prettier \
+  typescript-language-server \
+  @angular/language-server \
+  vscode-langservers-extracted
 
 # -----------------------------
 # Install Yazi packages
@@ -120,10 +140,29 @@ if ! command_exists cargo-binstall; then
   curl -L --proto '=https' --tlsv1.2 -sSf \
     https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh |
     bash
+
+  # cargo-binstall may have just been installed
+  init_cargo
 fi
 
-# cargo-binstall may have just been installed
-init_cargo
+# -----------------------------
+# Install Rust-based tooling
+# -----------------------------
+
+cargo binstall zellij
+cargo install vhdl_ls
+
+tmpdir="$(mktemp -d)"
+trap 'rm -rf "$tmpdir"' EXIT
+
+git clone --depth 1 --filter=blob:none --sparse \
+  "https://github.com/VHDL-LS/rust_hdl.git" \
+  "$tmpdir/rust_hdl"
+
+git -C "$tmpdir/rust_hdl" sparse-checkout set "vhdl_libraries"
+
+rm -rf "$HOME/.cargo/vhdl_libraries"
+mv "$tmpdir/rust_hdl/vhdl_libraries" "$HOME/.cargo/vhdl_libraries"
 
 # -----------------------------
 # Install Python with Miniconda
@@ -179,61 +218,11 @@ eval "$("$HOME/miniconda3/bin/conda" shell.bash hook)"
 conda activate base
 
 # -----------------------------
-# Install LSPs from Homebrew
-# -----------------------------
-
-brew install \
-  bash-language-server \
-  clang-format \
-  efm-langserver \
-  fish-lsp \
-  marksman \
-  ruff \
-  shfmt \
-  tombi \
-  yaml-language-server
-
-# -----------------------------
-# Install VHDL LSP from Rust Cargo
-# -----------------------------
-
-cargo install vhdl_ls
-
-tmpdir="$(mktemp -d)"
-trap 'rm -rf "$tmpdir"' EXIT
-
-git clone --depth 1 --filter=blob:none --sparse \
-  "https://github.com/VHDL-LS/rust_hdl.git" \
-  "$tmpdir/rust_hdl"
-
-git -C "$tmpdir/rust_hdl" sparse-checkout set "vhdl_libraries"
-
-rm -rf "$HOME/.cargo/vhdl_libraries"
-mv "$tmpdir/rust_hdl/vhdl_libraries" "$HOME/.cargo/vhdl_libraries"
-
-# -----------------------------
 # Install Python-based tooling
 # -----------------------------
 
 uv tool install emoji-fzf
 uv tool install "vsg @ git+https://github.com/lzulberti/vhdl-style-guide.git@3.35.0+multiblock"
-
-# -----------------------------
-# Install npm-based tooling
-# -----------------------------
-
-npm install -g \
-  devmoji \
-  prettier \
-  typescript-language-server \
-  @angular/language-server \
-  vscode-langservers-extracted
-
-# -----------------------------
-# Install Zellij with Cargo
-# -----------------------------
-
-cargo binstall zellij
 
 # -----------------------------
 # Initialize or update chezmoi dotfiles
