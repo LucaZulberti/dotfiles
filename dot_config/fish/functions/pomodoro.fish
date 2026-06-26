@@ -333,43 +333,87 @@ function __pomodoro_read_state --description 'Read and validate the persisted Po
         return 1
     end
 
-    # The state file is written by this script in Fish syntax on purpose, so it
-    # can be sourced without a custom parser.
-    source "$statefile"
+    # Parse the state file explicitly instead of sourcing it. This matches the
+    # daemon's parser and avoids scope interactions, side effects, and crashes if
+    # the file is partially written or contains unexpected content.
+    set -l run_state ''
+    set -l mode ''
+    set -l end ''
+    set -l remaining ''
+    set -l work ''
+    set -l short_break ''
+    set -l long_break ''
+    set -l cycle_pomodoros ''
+    set -l pomodoro_index ''
 
-    if not set -q run_state
+    while read -l cmd key value
+        if test -z "$cmd"
+            continue
+        end
+
+        if test "$cmd" != set
+            echo "error: malformed state file: unexpected command '$cmd'" >&2
+            return 1
+        end
+
+        switch "$key"
+            case run_state
+                set run_state "$value"
+            case mode
+                set mode "$value"
+            case end
+                set end "$value"
+            case remaining
+                set remaining "$value"
+            case work
+                set work "$value"
+            case short_break
+                set short_break "$value"
+            case long_break
+                set long_break "$value"
+            case cycle_pomodoros
+                set cycle_pomodoros "$value"
+            case pomodoro_index
+                set pomodoro_index "$value"
+            case '*'
+                echo "error: malformed state file: unexpected key '$key'" >&2
+                return 1
+        end
+    end <"$statefile"
+
+    if test -z "$run_state"
         echo "error: malformed state file: missing run_state" >&2
         return 1
     end
-    if not set -q mode
+    if test -z "$mode"
         echo "error: malformed state file: missing mode" >&2
         return 1
     end
-    if not set -q end
+    if test -z "$end"
         echo "error: malformed state file: missing end" >&2
         return 1
     end
-    if not set -q remaining
+    if test -z "$remaining"
         echo "error: malformed state file: missing remaining" >&2
         return 1
     end
-    if not set -q work
+    if test -z "$work"
         echo "error: malformed state file: missing work" >&2
         return 1
     end
-    if not set -q short_break
+    if test -z "$short_break"
         echo "error: malformed state file: missing short_break" >&2
         return 1
     end
-    if not set -q long_break
+    if test -z "$long_break"
         echo "error: malformed state file: missing long_break" >&2
         return 1
     end
-    if not set -q cycle_pomodoros
+    if test -z "$cycle_pomodoros"
         echo "error: malformed state file: missing cycle_pomodoros" >&2
         return 1
     end
-    if not set -q pomodoro_index
+    if test -z "$pomodoro_index"
         echo "error: malformed state file: missing pomodoro_index" >&2
         return 1
     end
