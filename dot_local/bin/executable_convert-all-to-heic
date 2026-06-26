@@ -4,6 +4,14 @@ set -euo pipefail
 OUTDIR="heic"
 QUALITY=82
 
+# Portable parallel-job count: nproc (GNU/Linux) is not present on stock macOS,
+# so fall back to sysctl/getconf there.
+if command -v nproc >/dev/null 2>&1; then
+    JOBS="$(nproc)"
+else
+    JOBS="$(sysctl -n hw.ncpu 2>/dev/null || getconf _NPROCESSORS_ONLN 2>/dev/null || echo 4)"
+fi
+
 # Collect extensions from all arguments, default to common image formats
 if [[ $# -gt 0 ]]; then
     EXTS=("$@")
@@ -35,6 +43,6 @@ export -f convert_file
 echo Starting conversion...
 
 find . -maxdepth 1 -type f \( "${name_predicates[@]}" \) \
-| parallel -j "$(nproc)" convert_file {} "$OUTDIR" "$QUALITY"
+| parallel -j "$JOBS" convert_file {} "$OUTDIR" "$QUALITY"
 
 echo Done.

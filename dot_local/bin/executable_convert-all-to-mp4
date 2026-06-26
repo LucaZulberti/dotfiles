@@ -1,12 +1,20 @@
 #!/usr/bin/env bash
+set -euo pipefail
+
+# Re-encodes videos in the current directory to H.264 MP4 under ./mp4.
+# Uses macOS VideoToolbox hardware encoding (h264_videotoolbox); on Linux swap
+# this for a software/other encoder (e.g. libx264).
 
 mkdir -p mp4
-shopt -s nocaseglob   # enable case-insensitive globbing
+shopt -s nocaseglob nullglob   # case-insensitive globbing; skip non-matching globs
 
 for f in *.{mp4,mov,mkv,avi}; do
     [ -f "$f" ] || continue
-    ffmpeg -i "$f" -c:v h264_videotoolbox -q:v 10 -r 30 "mp4/$f.mp4"
 
-    # Seems neecessary, otherwise next ffmpeg will go slowly
+    # Drop the original extension so we get "clip.mp4", not "clip.mov.mp4".
+    stem="${f%.*}"
+    ffmpeg -i "$f" -c:v h264_videotoolbox -q:v 10 -r 30 "mp4/$stem.mp4"
+
+    # Seems necessary, otherwise the next ffmpeg run goes slowly.
     sleep 10
 done
