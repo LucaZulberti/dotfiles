@@ -107,8 +107,13 @@ case "$mode" in
     ;;
 
   lint)
+    # Run from the config directory so the path vsg sees ("$orig_rel") matches
+    # the format-mode layout and any path-scoped rules resolve consistently.
+    # With no config, config_dir is "." and orig_rel is the original path, so
+    # this is a harmless no-op cd.
+    cd "$config_dir"
+
     set +e
-    echo vsg "${vsg_args[@]}" -of syntastic -f "$orig_rel" >"$tmpdir/vsg.echo" 2>&1
     vsg "${vsg_args[@]}" -of syntastic -f "$orig_rel" >"$tmpdir/vsg.out" 2>"$tmpdir/vsg.err"
     status=$?
     set -e
