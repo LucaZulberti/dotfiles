@@ -68,6 +68,7 @@ brew install \
   fzf \
   gawk \
   git git-delta git-filter-repo \
+  git-cliff \
   gitui \
   golang \
   helix \
