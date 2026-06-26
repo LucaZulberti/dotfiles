@@ -6,7 +6,7 @@ Library/
 {{- end }}
 {{- if ne .chezmoi.os "linux" }}
 .config/fish/conf.d/wsl.fish
-.config/fish/conf.d/ssh-wsl.fish
+.config/fish/functions/ssh-wsl.fish
 .config/systemd
 {{- else if not (.chezmoi.kernel.osrelease | lower | contains "microsoft") }}
 .config/fish/conf.d/wsl.fish
