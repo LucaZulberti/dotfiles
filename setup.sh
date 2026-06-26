@@ -56,12 +56,13 @@ brew install \
   bottom \
   broot \
   chezmoi \
-  emoji-fzf \
+  commitlint \
   eza \
   fd \
   fish fisher \
   fnm \
   fzf \
+  gawk \
   git git-delta git-filter-repo \
   gitui \
   golang \
@@ -74,6 +75,7 @@ brew install \
   television \
   tmux gitmux \
   tree-sitter-cli \
+  uv \
   yazi ffmpeg-full sevenzip jq poppler resvg imagemagick-full font-symbols-only-nerd-font \
   zoxide
 
@@ -183,6 +185,7 @@ conda activate base
 brew install \
   bash-language-server \
   clang-format \
+  efm-langserver \
   fish-lsp \
   marksman \
   ruff \
@@ -209,25 +212,11 @@ rm -rf "$HOME/.cargo/vhdl_libraries"
 mv "$tmpdir/rust_hdl/vhdl_libraries" "$HOME/.cargo/vhdl_libraries"
 
 # -----------------------------
-# Install CMake LSP using Python PIP
+# Install Python-based tooling
 # -----------------------------
 
-python -m pip install --upgrade pip
-python -m pip install cmakelang
-
-# -----------------------------
-# Install Go-based tooling
-# -----------------------------
-
-go install github.com/conventionalcommit/commitlint@latest
-go install github.com/mattn/efm-langserver@latest
-
-# -----------------------------
-# Install VHDL Style Guide formatter
-# -----------------------------
-
-python -m pip install --upgrade --force-reinstall \
-  "vsg @ git+https://github.com/lzulberti/vhdl-style-guide.git@3.35.0+multiblock"
+uv tool install emoji-fzf
+uv tool install "vsg @ git+https://github.com/lzulberti/vhdl-style-guide.git@3.35.0+multiblock"
 
 # -----------------------------
 # Install npm-based tooling
@@ -259,4 +248,7 @@ else
 fi
 
 echo "Verifying chezmoi managed files..."
-chezmoi verify || { echo "chezmoi verify failed — check template errors or missing 1Password items" >&2; exit 1; }
+chezmoi verify || {
+  echo "chezmoi verify failed — check template errors or missing 1Password items" >&2
+  exit 1
+}
