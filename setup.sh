@@ -59,6 +59,7 @@ brew install \
   chezmoi \
   clang-format \
   commitlint \
+  doxygen \
   efm-langserver \
   eza \
   fd \
