@@ -12,10 +12,19 @@ else
     JOBS="$(sysctl -n hw.ncpu 2>/dev/null || getconf _NPROCESSORS_ONLN 2>/dev/null || echo 4)"
 fi
 
-# Collect extensions from all arguments, default to common image formats
-if [[ $# -gt 0 ]]; then
-    EXTS=("$@")
-else
+# Parse arguments: --force re-converts files whose .heic already exists; any
+# other argument is treated as a file extension to look for.
+FORCE=0
+EXTS=()
+for arg in "$@"; do
+    case "$arg" in
+        --force | -f) FORCE=1 ;;
+        *) EXTS+=("$arg") ;;
+    esac
+done
+
+# Default to common image formats when no extensions were given
+if [[ ${#EXTS[@]} -eq 0 ]]; then
     EXTS=(jpg jpeg png hif tiff tif webp)
 fi
 
@@ -30,11 +39,17 @@ done
 unset 'name_predicates[-1]'
 
 convert_file() {
-    local file="$1" outdir="$2" quality="$3"
+    local file="$1" outdir="$2" quality="$3" force="$4"
     local base="${file##*/}"
     local stem="${base%.*}"
+    local out="${outdir}/${stem}.heic"
 
-    vips heifsave "$file" "${outdir}/${stem}.heic" --Q="$quality" \
+    if [[ "$force" -eq 0 && -e "$out" ]]; then
+        echo "⊘  skipped $file (already converted; use --force to redo)" >&2
+        return 0
+    fi
+
+    vips heifsave "$file" "$out" --Q="$quality" \
         && echo "✓  $file -> ${stem}.heic" \
         || echo "✗  $file" >&2
 }
@@ -43,6 +58,6 @@ export -f convert_file
 echo Starting conversion...
 
 find . -maxdepth 1 -type f \( "${name_predicates[@]}" \) \
-| parallel -j "$JOBS" convert_file {} "$OUTDIR" "$QUALITY"
+| parallel -j "$JOBS" convert_file {} "$OUTDIR" "$QUALITY" "$FORCE"
 
 echo Done.
