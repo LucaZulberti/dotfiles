@@ -5,6 +5,15 @@ set -euo pipefail
 # Uses macOS VideoToolbox hardware encoding (h264_videotoolbox); on Linux swap
 # this for a software/other encoder (e.g. libx264).
 
+# --force (-f) re-encodes files even when the mp4/<stem>.mp4 output exists.
+FORCE=0
+for arg in "$@"; do
+    case "$arg" in
+        --force | -f) FORCE=1 ;;
+        *) echo "Unknown argument: $arg" >&2; exit 2 ;;
+    esac
+done
+
 mkdir -p mp4
 shopt -s nocaseglob nullglob   # case-insensitive globbing; skip non-matching globs
 
@@ -13,7 +22,14 @@ for f in *.{mp4,mov,mkv,avi}; do
 
     # Drop the original extension so we get "clip.mp4", not "clip.mov.mp4".
     stem="${f%.*}"
-    ffmpeg -i "$f" -c:v h264_videotoolbox -q:v 10 -r 30 "mp4/$stem.mp4"
+    out="mp4/$stem.mp4"
+
+    if [[ "$FORCE" -eq 0 && -e "$out" ]]; then
+        echo "⊘  skipped $f (already converted; use --force to redo)" >&2
+        continue
+    fi
+
+    ffmpeg -i "$f" -c:v h264_videotoolbox -q:v 10 -r 30 "$out"
 
     # Seems necessary, otherwise the next ffmpeg run goes slowly.
     sleep 10
