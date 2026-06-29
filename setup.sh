@@ -80,6 +80,7 @@ brew install \
   ruff \
   scooter \
   sesh \
+  shellcheck \
   shfmt \
   sk \
   television \
