@@ -1,21 +1,35 @@
-function reload-ssh-agent --description "Reload SSH agent from tmux or ssh"
-    if set -q TMUX
-        # Prefer tmux environment if available
-        set -l sock (tmux show-environment SSH_AUTH_SOCK | string replace 'SSH_AUTH_SOCK=' '')
-        if test -n "$sock"
-            set -gx SSH_AUTH_SOCK $sock
-            echo "SSH_AUTH_SOCK reloaded from tmux: $SSH_AUTH_SOCK"
+function reload-ssh-agent --description "Reload SSH agent socket for SSH/zellij/tmux"
+    set -l candidates
+
+    # Current value, only if it is a real socket.
+    if set -q SSH_AUTH_SOCK; and test -S "$SSH_AUTH_SOCK" 2>/dev/null
+        set -a candidates "$SSH_AUTH_SOCK"
+    end
+
+    # Forwarded SSH agent sockets from active SSH logins.
+    for sock in /tmp/ssh-*/agent.*
+        if test -S "$sock" 2>/dev/null
+            if not contains -- "$sock" $candidates
+                set -a candidates "$sock"
+            end
+        end
+    end
+
+    for sock in $candidates
+        env SSH_AUTH_SOCK="$sock" ssh-add -l >/dev/null 2>&1
+        set -l rc $status
+
+        # ssh-add:
+        #   0 = agent reachable and has identities
+        #   1 = agent reachable but has no identities
+        #   2 = cannot contact agent
+        if test $rc -lt 2
+            set -gx SSH_AUTH_SOCK "$sock"
+            echo "SSH_AUTH_SOCK set to: $SSH_AUTH_SOCK"
             return 0
         end
     end
 
-
-    if set -q SSH_AUTH_SOCK
-        echo "SSH_AUTH_SOCK already set: $SSH_AUTH_SOCK"
-        return 0
-    end
-
-
-    echo "No SSH agent found"
+    echo "No usable SSH agent socket found"
     return 1
 end
