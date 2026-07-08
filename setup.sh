@@ -184,6 +184,18 @@ fi
 hash -r
 
 # -----------------------------
+# Install Fisher and its plugins
+# -----------------------------
+
+if command_exists fish; then
+  # Fisher
+  fish -c 'curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source'
+
+  # Plugins
+  fish -c 'fisher update'
+fi
+
+# -----------------------------
 # Install Node.js
 # -----------------------------
 
