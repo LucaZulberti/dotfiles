@@ -145,7 +145,6 @@ if init_homebrew && command_exists brew; then
       commitlint \
       doxygen \
       efm-langserver \
-      eza \
       fd \
       fish fisher \
       fish-lsp \
@@ -270,14 +269,10 @@ fi
 
 if commands_exist cargo cargo-binstall; then
   cargo binstall cargo-update
-else
-  skip_step "cargo-update installation" "cargo or cargo-binstall is not available"
-fi
-
-if commands_exist cargo cargo-binstall; then
+  cargo binstall eza
   cargo binstall zellij
 else
-  skip_step "zellij installation" "cargo or cargo-binstall is not available"
+  skip_step "cargo binstall binaries" "cargo or cargo-binstall is not available"
 fi
 
 if command_exists cargo; then
