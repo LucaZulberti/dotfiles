@@ -9,6 +9,16 @@ command_exists() {
   command -v "$1" >/dev/null 2>&1
 }
 
+user_has_sudo() {
+  # Root can proceed without sudo.
+  if [ "$(id -u)" -eq 0 ]; then
+    return 0
+  fi
+
+  # sudo must exist and the user must be allowed to use it.
+  command_exists sudo && sudo -v
+}
+
 init_homebrew() {
   local brew_bin=""
 
@@ -39,59 +49,63 @@ init_cargo() {
 # Install Homebrew
 # -----------------------------
 
-if ! command_exists brew; then
-  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+if user_has_sudo; then
+  if ! command_exists brew; then
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+  fi
+
+  # Required on first installation
+  init_homebrew
+
+  # -----------------------------
+  # Install Brew packages
+  # -----------------------------
+
+  brew install \
+    1password-cli \
+    bash-language-server \
+    bat \
+    bottom \
+    broot \
+    chezmoi \
+    clang-format \
+    commitlint \
+    doxygen \
+    efm-langserver \
+    eza \
+    fd \
+    fish fisher \
+    fish-lsp \
+    fnm \
+    fzf \
+    gawk \
+    git git-delta git-filter-repo \
+    git-cliff \
+    gitui \
+    golang \
+    helix \
+    marksman \
+    nvim \
+    parallel \
+    ripgrep \
+    ruff \
+    scooter \
+    sesh \
+    shellcheck \
+    shfmt \
+    sk \
+    television \
+    tmux gitmux \
+    tombi \
+    tree-sitter-cli \
+    uv \
+    vips \
+    yaml-language-server \
+    yazi ffmpeg-full sevenzip jq poppler resvg imagemagick-full font-symbols-only-nerd-font \
+    zoxide
+else
+  echo "Skipping Homebrew installation: user does not have sudo privileges."
 fi
-
-# Required on first installation
-init_homebrew
-
-# -----------------------------
-# Install Brew packages
-# -----------------------------
-
-brew install \
-  1password-cli \
-  bash-language-server \
-  bat \
-  bottom \
-  broot \
-  chezmoi \
-  clang-format \
-  commitlint \
-  doxygen \
-  efm-langserver \
-  eza \
-  fd \
-  fish fisher \
-  fish-lsp \
-  fnm \
-  fzf \
-  gawk \
-  git git-delta git-filter-repo \
-  git-cliff \
-  gitui \
-  golang \
-  helix \
-  marksman \
-  nvim \
-  parallel \
-  ripgrep \
-  ruff \
-  scooter \
-  sesh \
-  shellcheck \
-  shfmt \
-  sk \
-  television \
-  tmux gitmux \
-  tombi \
-  tree-sitter-cli \
-  uv \
-  vips \
-  yaml-language-server \
-  yazi ffmpeg-full sevenzip jq poppler resvg imagemagick-full font-symbols-only-nerd-font \
-  zoxide
 
 # -----------------------------
 # Install Node.js
