@@ -61,6 +61,35 @@ init_homebrew() {
   eval "$("$brew_bin" shellenv)"
 }
 
+current_user_name() {
+  if command_exists id; then
+    id -un 2>/dev/null || printf '%s\n' "${USER:-unknown}"
+  else
+    printf '%s\n' "${USER:-unknown}"
+  fi
+}
+
+homebrew_is_writable() {
+  local brew_prefix=""
+
+  if ! command_exists brew; then
+    warn "brew is not available"
+    return 1
+  fi
+
+  brew_prefix="$(brew --prefix 2>/dev/null || true)"
+  if [ -z "$brew_prefix" ] || [ ! -d "$brew_prefix" ]; then
+    warn "Homebrew prefix is not available"
+    return 1
+  fi
+
+  if [ ! -w "$brew_prefix" ]; then
+    warn "Homebrew prefix is not writable by $(current_user_name): $brew_prefix"
+    warn "fix Homebrew ownership/permissions before running brew install"
+    return 1
+  fi
+}
+
 init_cargo() {
   if [ -f "$HOME/.cargo/env" ]; then
     # shellcheck source=/dev/null
@@ -104,48 +133,52 @@ if init_homebrew && command_exists brew; then
   # Install Brew packages
   # -----------------------------
 
-  brew install \
-    1password-cli \
-    bash-language-server \
-    bat \
-    bottom \
-    broot \
-    chezmoi \
-    clang-format \
-    commitlint \
-    doxygen \
-    efm-langserver \
-    eza \
-    fd \
-    fish fisher \
-    fish-lsp \
-    fnm \
-    fzf \
-    gawk \
-    git git-delta git-filter-repo \
-    git-cliff \
-    gitui \
-    golang \
-    helix \
-    marksman \
-    nvim \
-    parallel \
-    ripgrep \
-    ruff \
-    scooter \
-    sesh \
-    shellcheck \
-    shfmt \
-    sk \
-    television \
-    tmux gitmux \
-    tombi \
-    tree-sitter-cli \
-    uv \
-    vips \
-    yaml-language-server \
-    yazi ffmpeg-full sevenzip jq poppler resvg imagemagick-full font-symbols-only-nerd-font \
-    zoxide
+  if homebrew_is_writable; then
+    brew install \
+      1password-cli \
+      bash-language-server \
+      bat \
+      bottom \
+      broot \
+      chezmoi \
+      clang-format \
+      commitlint \
+      doxygen \
+      efm-langserver \
+      eza \
+      fd \
+      fish fisher \
+      fish-lsp \
+      fnm \
+      fzf \
+      gawk \
+      git git-delta git-filter-repo \
+      git-cliff \
+      gitui \
+      golang \
+      helix \
+      marksman \
+      nvim \
+      parallel \
+      ripgrep \
+      ruff \
+      scooter \
+      sesh \
+      shellcheck \
+      shfmt \
+      sk \
+      television \
+      tmux gitmux \
+      tombi \
+      tree-sitter-cli \
+      uv \
+      vips \
+      yaml-language-server \
+      yazi ffmpeg-full sevenzip jq poppler resvg imagemagick-full font-symbols-only-nerd-font \
+      zoxide
+  else
+    skip_step "Brew packages" "Homebrew prefix is not writable by $(current_user_name)"
+  fi
 else
   skip_step "Brew packages" "brew is not available"
 fi
