@@ -158,7 +158,6 @@ if init_homebrew && command_exists brew; then
       golang \
       helix \
       marksman \
-      nvim \
       parallel \
       ripgrep \
       ruff \
@@ -167,7 +166,6 @@ if init_homebrew && command_exists brew; then
       shellcheck \
       shfmt \
       sk \
-      television \
       tmux gitmux \
       tombi \
       tree-sitter-cli \
@@ -269,6 +267,12 @@ fi
 # -----------------------------
 # Install Rust-based tooling
 # -----------------------------
+
+if commands_exist cargo cargo-binstall; then
+  cargo binstall cargo-update
+else
+  skip_step "cargo-update installation" "cargo or cargo-binstall is not available"
+fi
 
 if commands_exist cargo cargo-binstall; then
   cargo binstall zellij
