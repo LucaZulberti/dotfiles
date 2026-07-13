@@ -10,8 +10,7 @@ if not set -q SSH_AUTH_SOCK \
 end
 
 # Ensure ~/.agent.sock always links to the active SSH_AUTH_SOCK
+rm -f $HOME/.agent.sock
 if set -q SSH_AUTH_SOCK
-    ln -sf $SSH_AUTH_SOCK $HOME/.agent.sock
-else
-    rm -f $HOME/.agent.sock
+    ln -s $SSH_AUTH_SOCK $HOME/.agent.sock
 end
