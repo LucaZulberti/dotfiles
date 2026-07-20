@@ -15,5 +15,5 @@ function ssh-wsl
         set -gx WSLENV $entry
     end
 
-    /mnt/c/Windows/System32/OpenSSH/ssh.exe $argv
+    ssh.exe $argv
 end
