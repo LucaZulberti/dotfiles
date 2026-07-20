@@ -1,6 +1,6 @@
 function ssh-wsl
     if not set -q OP_SERVICE_ACCOUNT_TOKEN; or test -z "$OP_SERVICE_ACCOUNT_TOKEN"
-        set -gx OP_SERVICE_ACCOUNT_TOKEN (op read 'op://IngeniArs/IngeniArs Read Token/credential')
+        set -x OP_SERVICE_ACCOUNT_TOKEN (op read 'op://IngeniArs/IngeniArs Read Token/credential')
     end
 
     set -l entry OP_SERVICE_ACCOUNT_TOKEN/w
