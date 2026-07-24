@@ -19,6 +19,13 @@ text-width = 100
 soft-wrap = { enable = true, wrap-at-text-width = true }
 
 [[language]]
+name = "markdown"
+formatter = { command = "mdformat", args = ["-"] }
+auto-format = true
+text-width = 100
+rulers = [100]
+
+[[language]]
 name = "cmake"
 formatter = { command = "cmake-format", args = ["-"] }
 auto-format = true
