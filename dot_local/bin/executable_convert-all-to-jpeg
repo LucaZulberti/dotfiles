@@ -1,0 +1,54 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+OUTDIR="jpg"
+QUALITY=95
+
+if command -v nproc >/dev/null 2>&1; then
+  JOBS="$(nproc)"
+else
+  JOBS="$(sysctl -n hw.ncpu 2>/dev/null || getconf _NPROCESSORS_ONLN 2>/dev/null || echo 4)"
+fi
+
+FORCE=0
+for arg in "$@"; do
+  case "$arg" in
+  --force | -f) FORCE=1 ;;
+  esac
+done
+
+mkdir -p "$OUTDIR"
+
+convert_file() {
+  local file="$1"
+  local outdir="$2"
+  local quality="$3"
+  local force="$4"
+
+  local base="${file##*/}"
+  local stem="${base%.*}"
+  local out="${outdir}/${stem}.jpg"
+
+  if [[ "$force" -eq 0 && -e "$out" ]]; then
+    echo "⊘  skipped $file (already converted; use --force to redo)" >&2
+    return 0
+  fi
+
+  vips jpegsave "$file" "$out" \
+    --Q="$quality" \
+    --strip=false \
+    --optimize-coding \
+    --interlace &&
+    echo "✓  $file -> ${stem}.jpg" ||
+    echo "✗  $file" >&2
+}
+export -f convert_file
+
+echo "Starting conversion..."
+
+find . -maxdepth 1 -type f \( \
+  -iname "*.heic" -o \
+  -iname "*.heif" \
+  \) | parallel -j "$JOBS" convert_file {} "$OUTDIR" "$QUALITY" "$FORCE"
+
+echo "Done."
