@@ -16,13 +16,14 @@ function reload-ssh-agent --description "Reload SSH agent socket for SSH/zellij/
     end
 
     for sock in $candidates
-        env SSH_AUTH_SOCK="$sock" ssh-add -l >/dev/null 2>&1
+        env SSH_AUTH_SOCK="$sock" timeout 2s ssh-add -l >/dev/null 2>&1
         set -l rc $status
 
         # ssh-add:
-        #   0 = agent reachable and has identities
-        #   1 = agent reachable but has no identities
-        #   2 = cannot contact agent
+        #   0   = agent reachable and identities listed
+        #   1   = agent reachable, but operation failed
+        #   2   = cannot contact agent
+        #   124 = timeout
         if test $rc -lt 2
             set -gx SSH_AUTH_SOCK "$sock"
             echo "SSH_AUTH_SOCK set to: $SSH_AUTH_SOCK"
