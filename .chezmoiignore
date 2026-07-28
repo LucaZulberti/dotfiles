@@ -8,6 +8,7 @@ Library/
 .config/fish/conf.d/wsl.fish
 .config/fish/functions/ssh-wsl.fish
 .config/systemd
+.bashrc
 {{- else if not (.chezmoi.kernel.osrelease | lower | contains "microsoft") }}
 .config/fish/conf.d/wsl.fish
 {{- end }}
