@@ -48,7 +48,8 @@ echo "Starting conversion..."
 
 find . -maxdepth 1 -type f \( \
   -iname "*.heic" -o \
-  -iname "*.heif" \
+  -iname "*.heif" -o \
+  -iname "*.hif" \
   \) | parallel -j "$JOBS" convert_file {} "$OUTDIR" "$QUALITY" "$FORCE"
 
 echo "Done."
