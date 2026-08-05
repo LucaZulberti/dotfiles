@@ -1,3 +1,5 @@
+use-grammars = { only = ["d2"] }
+
 [language-server.efm]
 command = "efm-langserver"
 args = ["-c", "{{ .chezmoi.homeDir }}/.config/efm-langserver/config.yaml"]
@@ -81,6 +83,21 @@ auto-format = true
 
 [[language]]
 name = "typst"
-
 auto-format = true
 formatter.command = "typstyle"
+
+[[language]]
+name = "d2"
+language-id = "d2"
+scope = "source.d2"
+injection-regex = "d2"
+file-types = ["d2"]
+comment-token = "#"
+indent = { tab-width = 2, unit = "  " }
+grammar = "d2"
+formatter = { command = "d2", args = ["fmt", "-"] }
+auto-format = true
+
+[[grammar]]
+name = "d2"
+source = { git = "https://github.com/ravsii/tree-sitter-d2", rev = "main" }
