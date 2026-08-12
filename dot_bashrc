@@ -24,7 +24,7 @@ if [ -d ~/.bashrc.d ]; then
   done
 fi
 
-# Switch to Fish environment
-if [[ -t 0 && -t 1 ]] && command -v fish >/dev/null 2>&1; then
+# Switch to Fish unless NOFISH is defined
+if [[ ! -v NOFISH && -t 0 && -t 1 ]] && command -v fish >/dev/null 2>&1; then
   exec fish
 fi
