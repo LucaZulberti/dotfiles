@@ -95,7 +95,7 @@ file-types = ["d2"]
 comment-token = "#"
 indent = { tab-width = 2, unit = "  " }
 grammar = "d2"
-formatter = { command = "d2", args = ["fmt", "-"] }
+language-servers = [{ name = "efm", only-features = ["format"] }]
 auto-format = true
 
 [[grammar]]

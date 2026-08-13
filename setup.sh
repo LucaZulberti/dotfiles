@@ -143,6 +143,7 @@ if init_homebrew && command_exists brew; then
       chezmoi \
       clang-format \
       commitlint \
+      d2 \
       doxygen \
       efm-langserver \
       fd \

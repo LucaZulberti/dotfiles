@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+if [ "$#" -lt 2 ]; then
+  printf 'usage: d2-efm MODE FILE\n' >&2
+  printf 'MODE must be format\n' >&2
+  exit 2
+fi
+
+mode="$1"
+orig="$2"
+
+tmpdir="$(mktemp -d)"
+
+cleanup() {
+  rm -rf "$tmpdir"
+}
+trap cleanup EXIT
+
+case "$mode" in
+  format)
+    # d2 fmt formats a file in place; unlike shfmt/prettier it does not read
+    # stdin/write stdout on "-" (it treats "-" as a literal filename), so
+    # bridge via a temp file: write stdin to it, format it in place, then
+    # emit its contents on stdout for efm/Helix to swap into the buffer.
+    tmpfile="$tmpdir/$(basename "$orig")"
+    case "$tmpfile" in
+      *.d2) ;;
+      *) tmpfile="$tmpfile.d2" ;;
+    esac
+
+    cat > "$tmpfile"
+
+    if ! d2 fmt "$tmpfile" >"$tmpdir/d2.err" 2>&1; then
+      cat "$tmpdir/d2.err" >&2
+      exit 1
+    fi
+
+    cat "$tmpfile"
+    ;;
+
+  *)
+    printf 'unknown mode: %s\n' "$mode" >&2
+    exit 2
+    ;;
+esac

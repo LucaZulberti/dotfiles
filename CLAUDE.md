@@ -62,7 +62,7 @@ Common scopes match tool names: `helix`, `fish`, `tmux`, `gitui`, `yazi`, etc.
 | **Zellij** | `dot_config/zellij/config.kdl`; auto-started by fish on interactive login |
 | **Yazi** | `dot_config/yazi/`; accessed from Helix via `Space e` |
 | **gitui** | `dot_config/gitui/`; opened from Helix via `Ctrl-g` |
-| **efm-langserver** | `dot_config/efm-langserver/config.yaml`; bridges vsg (VHDL Style Guide) into Helix |
+| **efm-langserver** | `dot_config/efm-langserver/config.yaml`; bridges vsg (VHDL Style Guide) and `d2 fmt` into Helix |
 
 ## LSP / formatter setup (Helix)
 

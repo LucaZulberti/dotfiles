@@ -30,6 +30,13 @@ tools:
     format-stdin: true
     format-ignore-exit-code: false
 
+  d2-fmt: &d2-fmt
+    format-command: "d2-efm format ${INPUT}"
+    format-stdin: true
+    format-ignore-exit-code: false
+
 languages:
   vhdl:
     - <<: *vhdl-vsg
+  d2:
+    - <<: *d2-fmt
