@@ -24,7 +24,17 @@ if [ -d ~/.bashrc.d ]; then
   done
 fi
 
-# Switch to Fish unless NOFISH is defined
-if [[ ! -v NOFISH && -t 0 && -t 1 ]] && command -v fish >/dev/null 2>&1; then
-  exec fish
+# Switch to Fish unless NOFISH is defined.
+# Prefer Homebrew/Linuxbrew's fish over the system one: brew's fish.fish
+# config (0_brew.fish) only adds brew to PATH once fish is already running,
+# so exec'ing via a plain PATH lookup here can pick a much older system
+# fish (e.g. /usr/bin/fish) if brew's bin isn't on bash's PATH yet.
+if [[ ! -v NOFISH && -t 0 && -t 1 ]]; then
+  if [ -x /opt/homebrew/bin/fish ]; then
+    exec /opt/homebrew/bin/fish
+  elif [ -x /home/linuxbrew/.linuxbrew/bin/fish ]; then
+    exec /home/linuxbrew/.linuxbrew/bin/fish
+  elif command -v fish >/dev/null 2>&1; then
+    exec fish
+  fi
 fi
