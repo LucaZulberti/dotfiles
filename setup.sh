@@ -185,18 +185,6 @@ fi
 hash -r
 
 # -----------------------------
-# Install Fisher and its plugins
-# -----------------------------
-
-if command_exists fish; then
-  # Fisher
-  fish -c 'curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source'
-
-  # Plugins
-  fish -c 'fisher update'
-fi
-
-# -----------------------------
 # Install Node.js
 # -----------------------------
 
@@ -410,4 +398,22 @@ if command_exists chezmoi; then
   }
 else
   skip_step "chezmoi initialization" "chezmoi is not available"
+fi
+
+# -----------------------------
+# Install Fisher and its plugins
+# -----------------------------
+#
+# Runs after chezmoi so that dot_config/fish/fish_plugins is already in
+# place. Stdin is redirected from /dev/null because fisher's install/update
+# path does `isatty || read ...` to optionally accept a plugin list on
+# stdin; without a real tty this read blocks forever when setup.sh is run
+# non-interactively.
+
+if command_exists fish; then
+  # Fisher
+  fish -c 'curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source' < /dev/null
+
+  # Plugins
+  fish -c 'fisher update' < /dev/null
 fi
