@@ -2,9 +2,18 @@ function __remove_stale_ssh_agent_socket \
     --argument-names sock \
     --description "Remove a stale forwarded SSH agent socket"
 
+    set -l rmdir_if_empty 0
+
     # Never remove arbitrary SSH_AUTH_SOCK paths.
-    string match -qr '^/tmp/ssh-[^/]+/agent\.[0-9]+$' -- "$sock"
-    or return 1
+    if string match -qr '^/tmp/ssh-[^/]+/agent\.[0-9]+$' -- "$sock"
+        set rmdir_if_empty 1
+    else if string match -q -- "$HOME/.ssh/agent/*" "$sock"
+        # Persistent per-user agent directory (e.g. some sshd/systemd setups):
+        # remove the stale socket but keep the directory itself.
+        set rmdir_if_empty 0
+    else
+        return 1
+    end
 
     # Only remove files and directories owned by the current user.
     test -O "$sock"
@@ -18,8 +27,10 @@ function __remove_stale_ssh_agent_socket \
     command rm -f -- "$sock"
     or return 1
 
-    # Remove the OpenSSH temporary directory only when it is empty.
-    command rmdir -- "$socket_dir" 2>/dev/null
+    if test $rmdir_if_empty -eq 1
+        # Remove the OpenSSH temporary directory only when it is empty.
+        command rmdir -- "$socket_dir" 2>/dev/null
+    end
 
     echo "Removed stale SSH agent socket: $sock" >&2
     return 0
@@ -40,8 +51,9 @@ function reload-ssh-agent \
         end
     end
 
-    # Find forwarded SSH agent sockets.
-    for sock in /tmp/ssh-*/agent.*
+    # Find forwarded SSH agent sockets, whether under the classic /tmp
+    # location or a per-user directory (e.g. some sshd/systemd setups).
+    for sock in /tmp/ssh-*/agent.* $HOME/.ssh/agent/*
         if test -S "$sock"
             if not contains -- "$sock" $candidates
                 set -a candidates "$sock"
