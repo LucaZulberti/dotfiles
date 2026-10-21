@@ -4,6 +4,8 @@
 # dot_config/glab-cli/private_token.tmpl). Sourced automatically by dot_bashrc via ~/.bashrc.d/*.
 
 if [[ -r $HOME/.config/glab-cli/token ]]; then
-    GITLAB_TOKEN=$(<"$HOME/.config/glab-cli/token")
-    export GITLAB_TOKEN
+  GITLAB_TOKEN=$(<"$HOME/.config/glab-cli/token")
+  export GITLAB_TOKEN
+  GITLAB_HOST="gitlab.ingeniars.com"
+  export GITLAB_HOST
 fi
